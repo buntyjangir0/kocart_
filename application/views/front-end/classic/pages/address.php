@@ -73,7 +73,13 @@
                             </div>
                             <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                                 <label for="country" class="control-label"><?= !empty($this->lang->line('country')) ? $this->lang->line('country') : 'Country' ?></label>
-                                <input type="text" class="form-control" name="country" id="country" placeholder="Country" />
+                                <!-- <input type="text" class="form-control" name="country" id="country" placeholder="Country" /> -->
+                                <select name="country" id="edit_country" class="form-control">
+                                <option value=""><?= !empty($this->lang->line('select_country')) ? $this->lang->line('select_country') : '--Select Country--' ?></option>
+                                <?php foreach ($countries as $row) { ?>
+                                    <option value="<?= $row['name'] ?>"><?= $row['name'] ?></option>
+                                <?php } ?>
+                            </select>
                             </div>
                             <div class="col-md-12 col-sm-12 col-xs-12 form-group">
                                 <label for="country" class="control-label"><?= !empty($this->lang->line('type')) ? $this->lang->line('type') : 'Type : ' ?></label>
@@ -182,7 +188,13 @@
                         </div>
                         <div class="col-md-4 col-sm-12 col-xs-12 form-group">
                             <label for="country" class="control-label"><?= !empty($this->lang->line('country')) ? $this->lang->line('country') : 'Country' ?></label>
-                            <input type="text" class="form-control" name="country" id="edit_country" placeholder="Country" />
+                            <!-- <input type="text" class="form-control" name="country" id="edit_country" placeholder="Country" /> -->
+                            <select name="country" id="edit_country" class="form-control">
+                                <option value=""><?= !empty($this->lang->line('select_country')) ? $this->lang->line('select_country') : '--Select Country--' ?></option>
+                                <?php foreach ($countries as $row) { ?>
+                                    <option value="<?= $row['name'] ?>"><?= $row['name'] ?></option>
+                                <?php } ?>
+                            </select>
                         </div>
                         <div class="col-md-12 col-sm-12 col-xs-12 form-group">
                             <label for="country" class="control-label"><?= !empty($this->lang->line('type')) ? $this->lang->line('type') : 'Type : ' ?></label>

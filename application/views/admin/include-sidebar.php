@@ -92,28 +92,6 @@
                     </li>
                 <?php } ?>
 
-                <?php if (has_permissions('read', 'brands')) { ?>
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fab fa-adversal text-primary"></i>
-                            <p>
-                                Brands
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php if (has_permissions('read', 'brands')) { ?>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('admin/brand/') ?>" class="nav-link">
-                                        <i class="fab fa-adversal nav-icon"></i>
-                                        <p>brands</p>
-                                    </a>
-                                </li>
-                            <?php } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-
                 <?php if (has_permissions('read', 'seller')) { ?>
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -156,14 +134,14 @@
 
                         <ul class="nav nav-treeview">
 
-                             <!-- <?php if (has_permissions('read', 'attribute_set')) { ?>
+                            <?php if (has_permissions('read', 'attribute_set')) { ?>
                                 <li class="nav-item">
                                     <a href="<?= base_url('admin/attribute_set/manage-attribute-set') ?>" class="nav-link">
                                         <i class="fa fa-cogs nav-icon"></i>
                                         <p>Attribute Sets</p>
                                     </a>
                                 </li>
-                            <?php } ?>  -->
+                            <?php } ?>
 
                             <?php if (has_permissions('read', 'attribute')) { ?>
                                 <li class="nav-item">
@@ -175,7 +153,7 @@
                             <?php } ?>
 
 
-                            <!-- <?php if (has_permissions('read', 'attribute_value')) { ?>
+                            <?php if (has_permissions('read', 'attribute_value')) { ?>
 
                                 <li class="nav-item">
                                     <a href="<?= base_url('admin/attribute_value/manage-attribute-value') ?>" class="nav-link">
@@ -183,7 +161,7 @@
                                         <p>Attribute Values</p>
                                     </a>
                                 </li>
-                            <?php } ?> -->
+                            <?php } ?>
 
                             <?php if (has_permissions('read', 'tax')) { ?>
                                 <li class="nav-item">

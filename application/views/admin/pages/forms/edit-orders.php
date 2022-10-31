@@ -76,10 +76,25 @@
                     <div class="card card-info">
                         <div class="card-body">
                             <table class="table">
+                            <?php 
+                            $orderID = $order_detls[0]['id'];
+                            $order_trakings = $this->Order_model->get_traking($orderID);
+                            $trak = json_decode($order_trakings->completeData);
+                            ?>
                                 <tr>
                                     <input type="hidden" name="hidden" id="order_id" value="<?php echo $order_detls[0]['id']; ?>">
                                     <th class="w-10px">ID</th>
                                     <td><?php echo $order_detls[0]['id']; ?></td>
+                                </tr>
+                            	<tr>
+                                   
+                                    <th class="w-10px">Order Number</th>
+                                    <td><?php if(!empty($trak[0]->Order_No)){ echo $trak[0]->Order_No; }else { echo "N/A"; }?></td>
+                                </tr>
+                                <tr>
+                                    
+                                    <th class="w-10px">Tracking Number</th>
+                                    <td><?php if(!empty($trak[0]->Detail->BL_No)){ echo $trak[0]->Detail->BL_No; } else { echo "N/A"; } ?></td>
                                 </tr>
                                 <tr>
                                     <th class="w-10px">Name</th>
@@ -305,6 +320,14 @@
                                 <tr>
                                     <th class="w-10px">Order Date</th>
                                     <td><?php echo date('d-M-Y', strtotime($order_detls[0]['date_added'])); ?></td>
+                                </tr>
+                            <tr>
+                                    <th class="w-10px">Invoice Url</th>
+                                    <td><?php if(!empty($trak[0]->Detail->BL_Print_Url)){ ?><a href="<?php echo $trak[0]->Detail->BL_Print_Url; ?>" target="blank"><?php echo $trak[0]->Detail->BL_Print_Url; ?></a><?php }else { echo "N/A"; }?></td>
+                                </tr>
+                                <tr>
+                                    <th class="w-10px">Traking Url</th>
+                                    <td><?php if(!empty($trak[0]->Detail->BL_Pod_Url)){ ?><a href="<?php echo $trak[0]->Detail->BL_Pod_Url;?>" target="blank"><?php  echo $trak[0]->Detail->BL_Pod_Url;?></a><?php }else { echo "N/A"; }?></td>
                                 </tr>
                             </table>
                         </div>

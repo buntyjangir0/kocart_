@@ -8,7 +8,7 @@ class Cart extends CI_Controller
     {
         parent::__construct();
         $this->load->database();
-        $this->load->library(['cart', 'razorpay', 'stripe', 'paystack', 'flutterwave', 'midtrans']);
+        $this->load->library(['cart', 'razorpay', 'stripe', 'paystack', 'flutterwave']);
         $this->paystack->__construct('test');
         $this->load->model(['cart_model', 'address_model', 'order_model', 'Order_model', 'transaction_model']);
         $this->data['is_logged_in'] = ($this->ion_auth->logged_in()) ? 1 : 0;
@@ -346,8 +346,6 @@ class Cart extends CI_Controller
             }
             $this->data['time_slot_config'] = get_settings('time_slot_config', true);
             $payment_methods = get_settings('payment_method', true);
-
-
             $this->data['main_page'] = 'checkout';
             $this->data['title'] = 'Checkout | ' . $this->data['web_settings']['site_title'];
             $this->data['keywords'] = 'Checkout, ' . $this->data['web_settings']['meta_keywords'];
@@ -363,13 +361,13 @@ class Cart extends CI_Controller
             $this->data['support_email'] = (isset($settings['support_email']) && !empty($settings['support_email'])) ? $settings['support_email'] : 'abc@gmail.com';
             $currency = (isset($settings['currency']) && !empty($settings['currency'])) ? $settings['currency'] : '';
             $total = $this->data['cart']['total_arr'];
-            if ($total < $settings['minimum_cart_amt']) {
-                if (isset($settings['minimum_cart_amt']) && !empty($settings['minimum_cart_amt'])) {
-                    $this->session->set_flashdata('message', 'Minimum total should be ' . $currency . ' ' . $settings['minimum_cart_amt']);
-                    $this->session->set_flashdata('message_type', 'error');
-                    redirect(base_url('cart'), 'refresh');
-                }
-            }
+            // if ($total < $settings['minimum_cart_amt']) {
+            //     if (isset($settings['minimum_cart_amt']) && !empty($settings['minimum_cart_amt'])) {
+            //         $this->session->set_flashdata('message', 'Minimum total should be ' . $currency . ' ' . $settings['minimum_cart_amt']);
+            //         $this->session->set_flashdata('message_type', 'error');
+            //         redirect(base_url('cart'), 'refresh');
+            //     }
+            // }
             foreach ($cart_total_data as $row) {
                 if (isset($row['availability'])  && empty($row['availability']) && $row['availability'] != "") {
                     $this->session->set_flashdata('message', 'Some of the product(s) are OUt of Stock. Please remove it from cart or save to later.');
@@ -384,7 +382,428 @@ class Cart extends CI_Controller
         }
     }
 
-    public function place_order()
+//     public function place_order()
+//     {
+//         if ($this->data['is_logged_in']) {
+//             /*
+//             mobile:9974692496
+//             product_variant_id: 1,2,3
+//             quantity: 3,3,1
+//             latitude:40.1451
+//             longitude:-45.4545
+//             promo_code:NEW20 {optional}
+//             payment_method: Paypal / Payumoney / COD / PAYTM
+//             address_id:17
+//             delivery_date:10/12/2012
+//             delivery_time:Today - Evening (4:00pm to 7:00pm)
+//             is_wallet_used:1 {By default 0}
+//             wallet_balance_used:1
+//             active_status:awaiting {optional}
+      
+//         */
+//             // total:60.0
+//             // delivery_charge:20.0
+//             // tax_amount:10
+//             // tax_percentage:10
+//             // final_total:55
+//             $limit = (isset($_FILES['documents']['name'])) ? count($_FILES['documents']['name']) : 0;
+//             if (!isset($_POST['address_id']) || empty($_POST['address_id'])) {
+//                 $this->response['error'] = true;
+//                 $this->response['message'] = "Please choose address.";
+//                 $this->response['data'] = array();
+//                 print_r(json_encode($this->response));
+//                 return false;
+//             }
+//             $this->form_validation->set_rules('mobile', 'Mobile', 'trim|required|numeric|xss_clean');
+//             $this->form_validation->set_rules('product_variant_id', 'Product Variant Id', 'trim|required|xss_clean');
+//             $this->form_validation->set_rules('quantity', 'Quantities', 'trim|required|xss_clean');
+//             $this->form_validation->set_rules('promo_code', 'Promo Code', 'trim|xss_clean');
+//             $this->form_validation->set_rules('order_note', 'Special Note', 'trim|xss_clean');
+
+//             /*
+//         ------------------------------
+//         If Wallet Balance Is Used
+//         ------------------------------
+//         */
+//             $this->form_validation->set_rules('latitude', 'Latitude', 'trim|numeric|xss_clean');
+//             $this->form_validation->set_rules('longitude', 'Longitude', 'trim|numeric|xss_clean');
+//             $this->form_validation->set_rules('delivery_date', 'Delivery Date', 'trim|xss_clean');
+//             $this->form_validation->set_rules('delivery_time', 'Delivery time', 'trim|xss_clean');
+//             $this->form_validation->set_rules('address_id', 'Address id', 'trim|required|numeric|xss_clean', array('required' => 'Please choose address'));
+
+//             if ($_POST['payment_method'] == "Razorpay") {
+//                 $this->form_validation->set_rules('razorpay_order_id', 'Razorpay Order ID', 'trim|required|xss_clean');
+//                 $this->form_validation->set_rules('razorpay_payment_id', 'Razorpay Payment ID', 'trim|required|xss_clean');
+//                 $this->form_validation->set_rules('razorpay_signature', 'Razorpay Signature', 'trim|required|xss_clean');
+//             } else if ($_POST['payment_method'] == "Paystack") {
+//                 $this->form_validation->set_rules('paystack_reference', 'Paystack Reference', 'trim|required|xss_clean');
+//             } else if ($_POST['payment_method'] == "Flutterwave") {
+//                 $this->form_validation->set_rules('flutterwave_transaction_id', 'Flutterwave Transaction ID', 'trim|required|xss_clean');
+//                 $this->form_validation->set_rules('flutterwave_transaction_ref', 'Flutterwave Transaction Refrence', 'trim|required|xss_clean');
+//             } else if ($_POST['payment_method'] == "Paytm") {
+//                 $this->form_validation->set_rules('paytm_transaction_token', 'Paytm transaction token', 'trim|required|xss_clean');
+//                 $this->form_validation->set_rules('paytm_order_id', 'Paytm order ID', 'trim|required|xss_clean');
+//             }
+
+//             $_POST['user_id'] = $this->data['user']->id;
+//             $_POST['customer_email'] = $this->data['user']->email;
+//             $_POST['is_wallet_used'] = 0;
+//             $data = array();
+//             if (!$this->form_validation->run()) {
+//                 $this->response['error'] = true;
+//                 $this->response['message'] = strip_tags(validation_errors());
+//                 $this->response['data'] = array();
+//                 print_r(json_encode($this->response));
+//                 return;
+//             } else {
+//                 $_POST['order_note'] = (isset($_POST['order_note']) && !empty($_POST['order_note'])) ? $this->input->post("order_note", true) : NULL;
+//                 //checking for product availability 
+//                 $area_id = fetch_details('addresses', ['id' => $_POST['address_id']], 'area_id');
+//                 $product_delivarable = check_cart_products_delivarable($area_id[0]['area_id'], $_POST['user_id']);
+//                 if (!empty($product_delivarable)) {
+//                     $product_not_delivarable = array_filter($product_delivarable, function ($var) {
+//                         return ($var['is_deliverable'] == false && $var['product_id'] != null);
+//                     });
+//                     $product_not_delivarable = array_values($product_not_delivarable);
+//                     $product_delivarable = array_filter($product_delivarable, function ($var) {
+//                         return ($var['product_id'] != null);
+//                     });
+//                     if (!empty($product_not_delivarable)) {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Some of the item(s) are not delivarable on selected address. Try changing address or modify your cart items.";
+//                         $this->response['data'] = array();
+//                         print_r(json_encode($this->response));
+//                         return;
+//                     }
+//                 }
+//                 $product_variant_id = explode(',', $_POST['product_variant_id']);
+//                 for ($i = 0; $i < count($product_variant_id); $i++) {
+//                     $product_id = fetch_details("product_variants", ['id' => $product_variant_id[$i]], 'product_id');
+//                     $is_allowed = fetch_details("products", ['id' => $product_id[0]['product_id']], 'cod_allowed,name');
+//                     if ($is_allowed[0]['cod_allowed'] == 0) {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Cash On Delivery is not allow on the product " . $is_allowed[0]['name'];
+//                         $this->response['data'] = array();
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     }
+//                 }
+//                 $quantity = explode(',', $_POST['quantity']);
+//                 $check_current_stock_status = validate_stock($product_variant_id, $quantity);
+//                 if ($check_current_stock_status['error'] == true) {
+//                     $this->response['error'] = true;
+//                     $this->response['message'] = $check_current_stock_status['message'];
+//                     $this->response['data'] = array();
+//                     print_r(json_encode($this->response));
+//                     return false;
+//                 }
+
+//                 $cart = get_cart_total($_POST['user_id'], false, '0', $_POST['address_id']);
+//                 if (empty($cart)) {
+//                     $this->response['error'] = true;
+//                     $this->response['message'] = "Your Cart is empty.";
+//                     $this->response['data'] = array();
+//                     print_r(json_encode($this->response));
+//                     return false;
+//                 }
+
+//                 $_POST['delivery_charge'] = get_delivery_charge($_POST['address_id'], $cart['total_arr']);
+//                 $_POST['delivery_charge'] = str_replace(',', '', $_POST['delivery_charge']);
+//                 $_POST['is_delivery_charge_returnable'] = intval($_POST['delivery_charge']) != 0 ? 1 : 0;
+//                 $wallet_balance = fetch_details('users', 'id=' . $_POST['user_id'], 'balance');
+//                 $final_total = $cart['overall_amount'];
+//                 $wallet_balance = $wallet_balance[0]['balance'];
+//                 $_POST['wallet_balance_used'] = 0;
+//                 if (isset($_POST['wallet_used']) && $_POST['wallet_used'] == 1) {
+//                     if ($wallet_balance != 0) {
+//                         $_POST['is_wallet_used'] = 1;
+//                         if ($wallet_balance >= $final_total) {
+//                             $_POST['wallet_balance_used'] = $final_total;
+//                             $_POST['payment_method'] = 'wallet';
+//                         } else {
+//                             $_POST['wallet_balance_used'] = $wallet_balance;
+//                         }
+//                     } else {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Insufficient balance";
+//                         $this->response['data'] = array();
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     }
+//                 }
+//                 $promo_discount = 0;
+//                 if (isset($_POST['promo_code']) && !empty($_POST['promo_code'])) {
+//                     $validate = validate_promo_code($_POST['promo_code'], $this->data['user']->id, $cart['total_arr']);
+//                     if ($validate['error']) {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = $validate['message'];
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     } else {
+//                         $promo_discount = $validate['data'][0]['final_discount'];
+//                     }
+//                 }
+//                 $_POST['final_total'] = $cart['overall_amount'] - $_POST['wallet_balance_used'] - $promo_discount;
+//                 if ($_POST['payment_method'] == "Razorpay") {
+//                     if (!verify_payment_transaction($_POST['razorpay_payment_id'], 'razorpay')) {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Invalid Razorpay Payment Transaction.";
+//                         $this->response['data'] = array();
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     }
+//                     $data['status'] = "success";
+//                     $data['txn_id'] = $_POST['razorpay_payment_id'];
+//                     $data['message'] = "Order Placed Successfully";
+//                 } elseif ($_POST['payment_method'] == "Flutterwave") {
+//                     if (!verify_payment_transaction($_POST['flutterwave_transaction_id'], 'flutterwave')) {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Invalid Flutterwave Payment Transaction.";
+//                         $this->response['data'] = array();
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     }
+//                     $data['status'] = "success";
+//                     $data['txn_id'] = $_POST['flutterwave_transaction_id'];
+//                     $data['message'] = "Order Placed Successfully";
+//                 } elseif ($_POST['payment_method'] == "Paytm") {
+//                     $paytm_response = verify_payment_transaction($_POST['paytm_order_id'], 'paytm');
+//                     if ($paytm_response['error'] == true) {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Invalid Paytm Transaction.";
+//                         $this->response['data'] = array();
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     }
+//                     $status = $paytm_response['data']['body']['resultInfo']['resultStatus'];
+//                     $_POST['active_status'] = $status == "TXN_SUCCESS" ? 'received' : 'awaiting';
+//                     $data['status'] = $status == "TXN_SUCCESS" ? 'Success' : 'Pending';
+//                     $data['txn_id'] = $_POST['paytm_order_id'];
+//                     $data['message'] = "Order Placed Successfully";
+//                 } elseif ($_POST['payment_method'] == "Paystack") {
+//                     $transfer = verify_payment_transaction($_POST['paystack_reference'], 'paystack');
+//                     if (isset($transfer['data']['status']) && $transfer['data']['status']) {
+//                         if (isset($transfer['data']['data']['status']) && $transfer['data']['data']['status'] != "success") {
+//                             $this->response['error'] = true;
+//                             $this->response['message'] = "Invalid Paystack Transaction.";
+//                             $this->response['data'] = array();
+//                             print_r(json_encode($this->response));
+//                             return false;
+//                         }
+//                     } else {
+//                         $this->response['error'] = true;
+//                         $this->response['message'] = "Error While Fetching the Order Details.Contact Admin ASAP.";
+//                         $this->response['data'] = $transfer;
+//                         print_r(json_encode($this->response));
+//                         return false;
+//                     }
+//                     $data['txn_id'] = $_POST['paystack_reference'];
+//                     $data['message'] = "Order Placed Successfully";
+//                     $data['status'] = "success";
+//                 } elseif ($_POST['payment_method'] == "Stripe") {
+//                     $_POST['active_status'] = "awaiting";
+//                     $data['status'] = "success";
+//                     $data['txn_id'] = $_POST['stripe_payment_id'];
+//                     $data['message'] = "Order Placed Successfully";
+//                 } elseif ($_POST['payment_method'] == "Paypal") {
+//                     $_POST['active_status'] = "awaiting";
+//                     $data['status'] = "success";
+//                     $data['txn_id'] = null;
+//                     $data['message'] = null;
+//                 } elseif ($_POST['payment_method'] == "COD") {
+//                     $_POST['active_status'] = "received";
+//                 } elseif ($_POST['payment_method'] == "wallet") {
+//                     $data['status'] = "success";
+//                     $data['txn_id'] = null;
+//                     $data['message'] = 'Order Placed Successfully';
+//                 } elseif ($_POST['payment_method'] == BANK_TRANSFER) {
+//                     $_POST['payment_method'] = "bank_transfer";
+//                     $_POST['active_status'] = "awaiting";
+//                     $data['status'] = "awaiting";
+//                     $data['txn_id'] = null;
+//                     $data['message'] = null;
+//                 }
+
+//                 $res = $this->order_model->place_order($_POST);
+
+//                 $order_item_id = fetch_details('order_items', ['order_id' => $res['order_id']], 'id,sub_total');
+//                 for ($i = 0; $i < count($order_item_id); $i++) {
+//                     $data['status'] = $data['status'];
+//                     $data['txn_id'] = $data['txn_id'];
+//                     $data['message'] = $data['message'];
+//                     $data['order_id'] = $res['order_id'];
+//                     $data['user_id'] = $_POST['user_id'];
+//                     $data['type'] = $_POST['payment_method'];
+//                     $data['amount'] = $order_item_id[$i]['sub_total'];
+//                     $data['order_item_id'] = $order_item_id[$i]['id'];
+//                     if (($_POST['payment_method'] != "COD" && $_POST['payment_method'] != "Paypal") ||  $_POST['payment_method'] == "bank_transfer") {
+//                         $this->transaction_model->add_transaction($data);
+//                     }
+//                 }
+            
+// //             	$orderID = $res['order_id'];
+// //         		$order = $this->Order_model->get_Order($orderID);
+// //         		$userID = $order->user_id;
+// //         		$addressID = $order->address_id;
+
+// //         		$userdetails = $this->Order_model->getUserDetails($userID);
+// //         		$addressdetails = $this->Order_model->getUseraddress($addressID);
+// //         		$receivercity = $this->Order_model->getcity($addressdetails->city_id);
+
+// //        			$ReceiverName = $userdetails->username;
+// //         		$ReceiverTel = $userdetails->mobile;
+// //         		$ReceiverEmail = $userdetails->email;
+// //         		$ReceiverAddr = $addressdetails->address;
+
+// //         		$setAESsnKey = ACI_KEY;
+// //         		$setUserID  = ACI_USER;
+// //         		$setShipperAddr1 = $this->APIEncrypt($setAESsnKey, '서울시 강서구 외발산동');
+// //         		$setShipperAddr2 = $this->APIEncrypt($setAESsnKey, '217-1 ACI 빌딩');
+// //         		$setShipperTel = $this->APIEncrypt($setAESsnKey, '010-1234-69510');
+
+// //         		// $setReceiverName = $this->APIEncrypt($setAESsnKey, $ReceiverName);
+// //         		// $setReceiverAddr = $this->APIEncrypt($setAESsnKey, $ReceiverAddr);
+// //         		// $setReceiverTel = $this->APIEncrypt($setAESsnKey, $ReceiverTel);
+// //             	$setReceiverName = APIEncrypt($setAESsnKey, 'Mr John Smith');
+// //                 $setReceiverAddr = APIEncrypt($setAESsnKey, 'Mr John Smith 132, My Street Kingston, New York 12401');
+// //                 $setReceiverTel = APIEncrypt($setAESsnKey, '607-555-0109');
+
+// //         		$resultArray = array();
+// //         		$arrayMiddle = array(
+// //             		"Departure_Station" => 'SEL',
+// //             		"Arrival_Nation" => 'US',
+// //             		"Transfer_Company_Code" => '',
+// //             		"Order_Date" => date('Ymd'),
+// //             		"Order_Number" => date('Ymd').rand(111,999),
+// //             		"Hawb_No" => "",
+// //             		"Shipper_Name" => "ACI EXPRESSFF (U.K) LTD.",
+// //             		"Shipper_Country" => "KR",
+// //             		"Shipper_State" => "",
+// //             		"Shipper_City" => "SEL",
+// //             		"Shipper_Zip" => "07641",
+// //             		"Shipper_Address" => $setShipperAddr1,
+// //             		"Shipper_Address_Detail" => $setShipperAddr2,
+// //             		"Shipper_Tel" => $setShipperTel,
+// //             		"Shipper_Hp" => "",
+// //             		"Shipper_Email" => "",
+// //             		"Receiver_Country" => $addressdetails->country,
+// //             		"Receiver_State" => $addressdetails->state,
+// //             		"Receiver_City" => $receivercity->name,
+// //             		"Receiver_District" => "",
+// //             		"Receiver_Zip" => $addressdetails->pincode,
+// //             		"Receiver_Name" => $ReceiverName,
+// //             		"Native_Receiver_Name" => $setReceiverName,
+// //             		"Native_Receiver_Address" => $setReceiverAddr,
+// //             		"Receiver_Address" => $setReceiverAddr,
+// //             		"Native_Receiver_Address_Detail" => "",
+// //             		"Receiver_Address_Detail" => "",
+// //             		"Receiver_Tel" => $setReceiverTel,
+// //             		"Receiver_Hp" => "",
+// //             		"Receiver_Email" => '',
+// //             		"Box_Count" => "1",
+// //             		"Actual_Weight" => "0.0",
+// //             		"Volume_Weight" => "",
+// //             		"Volume_Length" => "",
+// //             		"Volume_Width" => "",
+// //             		"Volume_Height" => "",
+// //             		"Custom_Clearance_ID" => "",
+// //             		"Buy_Site" => "https://kocart.com/",
+// //             		"Size_Unit" => "CM",
+// //             		"Weight_Unit" => "KG",
+// //             		"Get_Buy" => "1",
+// //            		 	"Mall_Type" => "A",
+// //             		"Warehouse_Msg" => "",
+// //             		"Delivery_Msg" => "Call M",
+// //                 	"Exp_Licence_YN"=> "N",
+// //                 	"Exp_Business_Num"=> "",
+// //                     "GoodsInfo" => array()
+// //                 );
+
+
+// //                 $Orderitems = $this->Order_model->getOrderItem($orderID);
+// //                 $i = 1;
+// //                 foreach($Orderitems as $item){
+// //                     $ary = "goods".$i;
+// //                     $ary = array(
+// //                     'Customer_Item_Code' => 'ITEM'.$item->order_id,
+// //                     'Hs_Code' => '',
+// //                     'Brand' => 'N/A',
+// //                     'Item_Detail' => $item->product_name,
+// //                     'Native_Item_Detail' => 'N/A',
+// //                     'Item_Cnt' => $item->quantity,
+// //                     'Unit_Value' => $item->quantity * $item->price,
+// //                     'Make_Country' => '',
+// //                     'Make_Company' => '',
+// //                     'Item_Div' => '',
+// //                     'Qty_Unit' => '',
+// //                     'Item_Url' => '',
+// //                     'Item_Img_Url' => '',
+// //                     'Trking_Company' => '',
+// //                     'Trking_Number' => date('Ymd').$orderID,
+// //                     'Trking_Date' => date('Ymd'),
+// //                     'Chg_Currency' => 'USD',
+// //                     'Item_Material' => ''
+
+// //                 );
+
+// //                 array_push($arrayMiddle['GoodsInfo'], $ary);
+// //                 $i++;
+// //                 }
+
+// //                 array_push($resultArray, $arrayMiddle);
+// //                 $json_result = json_encode($resultArray);
+// //                 date_default_timezone_set("Asia/Seoul");
+// //                 $setSendDate = date("YmdHis"); //KST
+// //                 $setTokenKey = $this->APIEncrypt($setAESsnKey, $setSendDate."|".$setUserID);
+
+
+// //                 $headers[] = 'Content-Type: application/json';
+// //                 $headers[] = 'UserID: ' . $setUserID;
+// //                 $headers[] = 'APIkey: ' . $setTokenKey;
+
+
+// //                 $ch = curl_init();
+// //                 $url = "https://wms.acieshop.com/api/orderNomalRegist";
+// //                 curl_setopt($ch, CURLOPT_URL, $url);
+// //                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+// //                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+// //                 curl_setopt($ch, CURLOPT_POST, 1);
+// //                 curl_setopt($ch, CURLOPT_POSTFIELDS, $json_result);
+// //                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// //                 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+// //                 curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+// //                 $response = curl_exec($ch);
+
+// //                 $response = urldecode($response);
+// //                 $OrderNum = json_decode($response);
+// //                 $order_number = $OrderNum[0]->Order_No;
+// //                 curl_close($ch);
+// //                 $order_num = '';             
+
+// //                 $order_tracking_aci = array(  
+// //                                 'order_id'     => $orderID,  
+// //                                 'order_num'     => $order_number,
+// //                                 'user_id'  => $userID,  
+// //                                 'completeData'   => $response,  
+// //                                 'DateTime' => date('Y-m-d h:i:s')  
+// //                                 );  
+// //                 $this->db->insert('order_tracking_aci',$order_tracking_aci);
+           
+
+
+            
+//                 $this->response['error'] = false;
+//                 $this->response['message'] = "Order Placed Successfully.";
+//                 $this->response['data'] = $res;
+//                 print_r(json_encode($this->response));
+//                 return false;
+//             }
+//         } else {
+//             return false;
+//         }
+//     }
+
+public function place_order()
     {
         if ($this->data['is_logged_in']) {
             /*
@@ -478,18 +897,16 @@ class Cart extends CI_Controller
                         return;
                     }
                 }
-                if ($_POST['payment_method'] == 'COD') {
-                    $product_variant_id = explode(',', $_POST['product_variant_id']);
-                    for ($i = 0; $i < count($product_variant_id); $i++) {
-                        $product_id = fetch_details("product_variants", ['id' => $product_variant_id[$i]], 'product_id');
-                        $is_allowed = fetch_details("products", ['id' => $product_id[0]['product_id']], 'cod_allowed,name');
-                        if ($is_allowed[0]['cod_allowed'] == 0) {
-                            $this->response['error'] = true;
-                            $this->response['message'] = "Cash On Delivery is not allow on the product " . $is_allowed[0]['name'];
-                            $this->response['data'] = array();
-                            print_r(json_encode($this->response));
-                            return false;
-                        }
+                $product_variant_id = explode(',', $_POST['product_variant_id']);
+                for ($i = 0; $i < count($product_variant_id); $i++) {
+                    $product_id = fetch_details("product_variants", ['id' => $product_variant_id[$i]], 'product_id');
+                    $is_allowed = fetch_details("products", ['id' => $product_id[0]['product_id']], 'cod_allowed,name');
+                    if ($is_allowed[0]['cod_allowed'] == 0) {
+                        $this->response['error'] = true;
+                        $this->response['message'] = "Cash On Delivery is not allow on the product " . $is_allowed[0]['name'];
+                        $this->response['data'] = array();
+                        print_r(json_encode($this->response));
+                        return false;
                     }
                 }
                 $quantity = explode(',', $_POST['quantity']);
@@ -632,27 +1049,201 @@ class Cart extends CI_Controller
 
                 $order_item_id = fetch_details('order_items', ['order_id' => $res['order_id']], 'id,sub_total');
                 for ($i = 0; $i < count($order_item_id); $i++) {
-                    $data['status'] = $data['status'];
-                    $data['txn_id'] = $data['txn_id'];
-                    $data['message'] = $data['message'];
+
                     $data['order_id'] = $res['order_id'];
                     $data['user_id'] = $_POST['user_id'];
                     $data['type'] = $_POST['payment_method'];
-                    $data['amount'] = $order_item_id[$i]['sub_total'];
-                    $data['order_item_id'] = $order_item_id[$i]['id'];
-                    if (($_POST['payment_method'] != "COD" && $_POST['payment_method'] != "Paypal") ||  $_POST['payment_method'] == "bank_transfer") {
-                        $this->transaction_model->add_transaction($data);
-                    }
+                    $data['amount'] = $_POST['final_total'];
                 }
-                $this->response['error'] = false;
-                $this->response['message'] = "Order Placed Successfully.";
-                $this->response['data'] = $res;
-                print_r(json_encode($this->response));
-                return false;
+               // $this->response['error'] = false;
+                //$this->response['message'] = "Order Placed Successfully.";
+                //$this->response['data'] = $res;
+                
+        $orderID = $res['order_id'];
+        $order = $this->Order_model->get_Order($orderID);
+        $userID = $order->user_id;
+        $addressID = $order->address_id;
+        
+        $userdetails = $this->Order_model->getUserDetails($userID);
+        $addressdetails = $this->Order_model->getUseraddress($addressID);
+        $receivercity = $this->Order_model->getcity($addressdetails->city_id);
+
+        $ReceiverName = $userdetails->username;
+        $ReceiverTel = $userdetails->mobile;
+        $ReceiverEmail = $userdetails->email;
+        $ReceiverAddr = $addressdetails->address;
+
+        $setAESsnKey = ACI_KEY;
+        $setUserID  = ACI_USER;
+        $setShipperAddr1 = $this->APIEncrypt($setAESsnKey, '서울시 강서구 외발산동');
+        $setShipperAddr2 = $this->APIEncrypt($setAESsnKey, '217-1 ACI 빌딩');
+        $setShipperTel = $this->APIEncrypt($setAESsnKey, '010-1234-69510');
+        
+        $setReceiverName = $this->APIEncrypt($setAESsnKey, $ReceiverName);
+        $setReceiverAddr = $this->APIEncrypt($setAESsnKey, $ReceiverAddr);
+        $setReceiverTel = $this->APIEncrypt($setAESsnKey, $ReceiverTel);
+
+        $resultArray = array();
+        $arrayMiddle = array(
+            "Departure_Station" => 'SEL',
+            "Arrival_Nation" => 'US',
+            "Transfer_Company_Code" => '',
+            "Order_Date" => date('Ymd'),
+            "Order_Number" => date('Ymd').rand(111,999),
+            "Hawb_No" => "",
+            "Shipper_Name" => "ACI EXPRESSFF (U.K) LTD.",
+            "Shipper_Country" => "KR",
+            "Shipper_State" => "",
+            "Shipper_City" => "SEL",
+            "Shipper_Zip" => "07641",
+            "Shipper_Address" => $setShipperAddr1,
+            "Shipper_Address_Detail" => $setShipperAddr2,
+            "Shipper_Tel" => $setShipperTel,
+            "Shipper_Hp" => "",
+            "Shipper_Email" => "",
+            "Receiver_Country" => $addressdetails->country,
+            "Receiver_State" => $addressdetails->state,
+            "Receiver_City" => $receivercity->name,
+            "Receiver_District" => "",
+            "Receiver_Zip" => $addressdetails->pincode,
+            "Receiver_Name" => $ReceiverName,
+            "Native_Receiver_Name" => $setReceiverName,
+            "Native_Receiver_Address" => $setReceiverAddr,
+            "Receiver_Address" => $setReceiverAddr,
+            "Native_Receiver_Address_Detail" => "",
+            "Receiver_Address_Detail" => "",
+            "Receiver_Tel" => $setReceiverTel,
+            "Receiver_Hp" => "",
+            "Receiver_Email" => '',
+            "Box_Count" => "1",
+            "Actual_Weight" => "0.0",
+            "Volume_Weight" => "",
+            "Volume_Length" => "",
+            "Volume_Width" => "",
+            "Volume_Height" => "",
+            "Custom_Clearance_ID" => "",
+            "Buy_Site" => "https://kocart.com/",
+            "Size_Unit" => "CM",
+            "Weight_Unit" => "KG",
+            "Get_Buy" => "1",
+            "Mall_Type" => "A",
+            "Warehouse_Msg" => "",
+            "Delivery_Msg" => "Call M",
+        		"Exp_Licence_YN"=> "N",
+        		"Exp_Business_Num"=> "",
+            "GoodsInfo" => array()
+        );
+
+
+        $Orderitems = $this->Order_model->getOrderItem($orderID);
+        $i = 1;
+        foreach($Orderitems as $item){
+            $ary = "goods".$i;
+            $ary = array(
+            'Customer_Item_Code' => 'ITEM'.$item->order_id,
+            'Hs_Code' => '',
+            'Brand' => 'N/A',
+            'Item_Detail' => $item->product_name,
+            'Native_Item_Detail' => 'N/A',
+            'Item_Cnt' => $item->quantity,
+            'Unit_Value' => $item->quantity * $item->price,
+            'Make_Country' => '',
+            'Make_Company' => '',
+            'Item_Div' => '',
+            'Qty_Unit' => '',
+            'Item_Url' => '',
+            'Item_Img_Url' => '',
+            'Trking_Company' => '',
+            'Trking_Number' => date('Ymd').$orderID,
+            'Trking_Date' => date('Ymd'),
+            'Chg_Currency' => 'USD',
+            'Item_Material' => ''
+        
+        );
+        
+        array_push($arrayMiddle['GoodsInfo'], $ary);
+        $i++;
+        }
+
+        array_push($resultArray, $arrayMiddle);
+        $json_result = json_encode($resultArray);
+        date_default_timezone_set("Asia/Seoul");
+        $setSendDate = date("YmdHis"); //KST
+        $setTokenKey = $this->APIEncrypt($setAESsnKey, $setSendDate."|".$setUserID);
+
+
+        $headers[] = 'Content-Type: application/json';
+        $headers[] = 'UserID: ' . $setUserID;
+        $headers[] = 'APIkey: ' . $setTokenKey;
+
+
+        $ch = curl_init();
+        $url = "https://wms.acieshop.com/api/orderNomalRegist";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_result);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        $response = curl_exec($ch);
+        
+        $response = urldecode($response);
+            
+        $OrderNum = json_decode($response);
+        $order_number = $OrderNum[0]->Order_No;
+        $tracking_id = $OrderNum[0]->Detail->BL_No;  
+        $traking_url = $OrderNum[0]->Detail->BL_Pod_Url;
+        $invoice_url = $OrderNum[0]->Detail->BL_Print_Url;   
+            
+        curl_close($ch);
+        $order_num = '';             
+                
+        $order_tracking_aci = array(  
+                        'order_id'     => $orderID,  
+                        'order_num'     => $order_number,
+                        'user_id'  => $userID,  
+                        'completeData'   => $response,  
+                        'DateTime' => date('Y-m-d h:i:s')  
+                        );  
+        $this->db->insert('order_tracking_aci',$order_tracking_aci); 
+        
+          // Order Traking  
+        $order_tracking = array(  
+                        'order_id'     => $orderID,  
+                        'order_item_id'     => $order_number,
+                        'courier_agency'  => 'WMS ACI',  
+                        'tracking_id'   => $tracking_id,  
+        				'url' => $traking_url,
+        				'invoice_url' => $invoice_url,
+                        'date_created' => date('Y-m-d h:i:s')  
+                        );  
+        $this->db->insert('order_tracking',$order_tracking);     
+            
+        $this->response['error'] = false;
+        $this->response['message'] = "Order Placed Successfully.";
+        $this->response['data'] = $res;        
+        print_r(json_encode($this->response));
+        return false;
             }
         } else {
             return false;
         }
+    }
+
+
+
+	public function APIEncrypt($key, $value)
+    {
+        //global $key;
+        return base64_encode(openssl_encrypt($value, "aes-256-cbc", $key, true, str_repeat(chr(0), 16)));
+    }
+
+    public function APIDecrypt($key, $value)
+    {
+        //global $key;
+        return openssl_decrypt(base64_decode($value), "aes-256-cbc", $key, true, str_repeat(chr(0), 16));
     }
 
     public function validate_promo_code()
@@ -726,27 +1317,6 @@ class Cart extends CI_Controller
                 $order = $this->stripe->create_payment_intent(array('amount' => ($overall_amount * 100)));
                 $this->response['client_secret'] = $order['client_secret'];
                 $this->response['id'] = $order['id'];
-            } elseif ($_POST['payment_method'] == "Midtrans") {
-                $order_id = "mdtrns-" . $this->data['user']->id . "-" . time() . "-" . rand("100", "999");
-
-                $order = $this->midtrans->create_transaction($order_id, $overall_amount);
-                $order['body'] = (isset($order['body']) && !empty($order['body'])) ? json_decode($order['body'], 1) : "";
-
-                if (!empty($order['body'])) {
-                    $this->response['error'] = false;
-                    $this->response['order_id'] = $order_id;
-                    $this->response['token'] = $order['body']['token'];
-                    $this->response['redirect_url'] = $order['body']['redirect_url'];
-                    $this->response['message'] = "Transaction Token generated successfully.";
-                    print_r(json_encode($this->response));
-                    return false;
-                } else {
-                    $this->response['error'] = true;
-                    $this->response['message'] = "Oops! Token couldn't be generated! check your configurations!";
-                    $this->response['details'] = $order;
-                    print_r(json_encode($this->response));
-                    return false;
-                }
             } elseif ($_POST['payment_method'] == "Flutterwave" || $_POST['payment_method'] == "Paystack" || $_POST['payment_method'] == "Paytm") {
                 $this->response['error'] = false;
                 $this->response['final_amount'] = $overall_amount;

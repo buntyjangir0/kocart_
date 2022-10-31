@@ -26,7 +26,6 @@
                 </a>
             </li>
         <?php } ?>
-        
         <!-- google translate  -->
         <div id="google_translate_element"></div>
 

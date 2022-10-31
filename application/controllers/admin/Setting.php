@@ -27,7 +27,7 @@ class Setting extends CI_Controller
             $settings = get_settings('system_settings', true);
             $this->data['title'] = 'Settings | ' . $settings['app_name'];
             $this->data['meta_description'] = 'Settings  | ' . $settings['app_name'];
-            $this->data['timezone'] = timezone_list();
+            $this->data['timezone'] = get_timezone_array();
             $this->data['logo'] = get_settings('logo');
             $this->data['favicon'] = get_settings('favicon');
             $this->data['settings'] = get_settings('system_settings', true);

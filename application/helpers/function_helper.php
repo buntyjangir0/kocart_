@@ -173,7 +173,7 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
      p.is_prices_inclusive_tax, p.type ,GROUP_CONCAT(DISTINCT(pa.attribute_value_ids)) as attr_value_ids,sd.rating as seller_rating,sd.slug as seller_slug,sd.no_of_ratings as seller_no_of_ratings,sd.logo as seller_profile, sd.store_name as store_name,sd.store_description, p.seller_id, u.username as seller_name,
      p.id,p.stock,p.name,p.category_id,p.short_description,p.slug,p.description,p.total_allowed_quantity,p.status,p.deliverable_type,p.deliverable_zipcodes,p.minimum_order_quantity,p.sku,
      p.quantity_step_size,p.cod_allowed,p.row_order,p.rating,p.no_of_ratings,p.image,p.is_returnable,p.is_cancelable,p.cancelable_till,p.indicator,p.other_images, 
-     p.video_type, p.video, p.tags, p.warranty_period, p.guarantee_period, p.made_in,p.brand,p.availability,c.name as category_name,tax.percentage as tax_percentage ,tax.id as tax_id ')
+     p.video_type, p.video, p.tags, p.warranty_period, p.guarantee_period, p.made_in,p.availability,c.name as category_name,tax.percentage as tax_percentage ,tax.id as tax_id ')
         ->join(" categories c", "p.category_id=c.id ", 'LEFT')
         ->join(" seller_data sd", "p.seller_id=sd.user_id ")
         ->join(" users u", "p.seller_id=u.id")
@@ -351,6 +351,7 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
         return $t->db->count_all_results('products p');
     } else {
         $product = $t->db->get('products p')->result_array();
+       // print_r($product);
     }
     $count = isset($filter) && !empty($filter['flag']) ? 'count(DISTINCT(p.id))' : 'count(DISTINCT(p.id))';
     $discount_filter = (isset($filter['discount']) && !empty($filter['discount'])) ? ' , GROUP_CONCAT( IF( ( IF( pv.special_price > 0, ((pv.price - pv.special_price) / pv.price) * 100, 0 ) ) > ' . $filter['discount'] . ', ( IF( pv.special_price > 0, ((pv.price - pv.special_price) / pv.price) * 100, 0 ) ), 0 ) ) AS cal_discount_percentage ' : '';
@@ -448,11 +449,10 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
     $temp = [];
     $min_price = get_price('min');
     $max_price = get_price('max');
- 
+
     if (!empty($product)) {
         $t->load->model('rating_model');
         for ($i = 0; $i < count($product); $i++) {
-           
             $rating = $t->rating_model->fetch_rating($product[$i]['id'], '', 8, 0, 'pr.id', 'desc', '', 1);
             $product[$i]['review_images'] = (!empty($rating)) ? [$rating] : array();
             $product[$i]['tax_percentage'] = (isset($product[$i]['tax_percentage']) && intval($product[$i]['tax_percentage']) > 0) ? $product[$i]['tax_percentage'] : '0';
@@ -468,7 +468,6 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
             $product[$i]['video_type'] = isset($product[$i]['video_type']) && !empty($product[$i]['video_type']) ? $product[$i]['video_type'] : '';
             $product[$i]['attr_value_ids'] = isset($product[$i]['attr_value_ids']) && !empty($product[$i]['attr_value_ids']) ? $product[$i]['attr_value_ids'] : '';
             $product[$i]['made_in'] = isset($product[$i]['made_in']) && !empty($product[$i]['made_in']) ? $product[$i]['made_in'] : '';
-            $product[$i]['brand'] = isset($product[$i]['brand']) && !empty($product[$i]['brand']) ? $product[$i]['brand'] : '';
             $product[$i]['warranty_period'] = isset($product[$i]['warranty_period']) && !empty($product[$i]['warranty_period']) ? $product[$i]['warranty_period'] : '';
             $product[$i]['guarantee_period'] = isset($product[$i]['guarantee_period']) && !empty($product[$i]['guarantee_period']) ? $product[$i]['guarantee_period'] : '';
             $product[$i]['total_allowed_quantity'] = isset($product[$i]['total_allowed_quantity']) && !empty($product[$i]['total_allowed_quantity']) ? $product[$i]['total_allowed_quantity'] : '';
@@ -495,16 +494,15 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
             $product[$i]['rating'] = output_escaping(number_format($product[$i]['rating'], 2));
             $product[$i]['availability'] = isset($product[$i]['availability']) && ($product[$i]['availability'] != "") ? $product[$i]['availability'] : '';
             $product[$i]['sku'] = isset($product[$i]['sku']) && ($product[$i]['sku'] != "") ? $product[$i]['sku'] : '';
-           
             /* getting zipcodes from ids */
             if ($product[$i]['deliverable_type'] != NONE && $product[$i]['deliverable_type'] != ALL) {
                 $zipcodes = array();
-                $zipcode_ids = explode(",", $product[$i]['deliverable_zipcodes_ids']);
+                $zipcode_ids = explode(",",$product[$i]['deliverable_zipcodes_ids']);
                 // $t->db->select('zipcode');
                 // $t->db->where_in('id', $zipcode_ids);
                 // $zipcodes = $t->db->get('zipcodes')->result_array();
                 $zipcodes = array_column($zipcodes, "zipcode");
-                $product[$i]['deliverable_zipcodes'] = implode(",", $zipcode_ids);
+                $product[$i]['deliverable_zipcodes'] = implode(",",$zipcode_ids);
             } else {
                 $product[$i]['deliverable_zipcodes'] = '';
             }
@@ -520,13 +518,6 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
             } else {
                 $product[$i]['is_deliverable'] = false;
             }
-          
-            if($product[$i]['deliverable_type'] == 1)
-            {
-                $product[$i]['is_deliverable'] = true;
-            }
-           
-        
             $product[$i]['tags'] = (!empty($product[$i]['tags'])) ? explode(",", $product[$i]['tags']) : [];
 
             $product[$i]['video'] = (isset($product[$i]['video_type']) && (!empty($product[$i]['video_type']) || $product[$i]['video_type'] != NULL)) ? (($product[$i]['video_type'] == 'youtube' || $product[$i]['video_type'] == 'vimeo') ? $product[$i]['video'] : base_url($product[$i]['video'])) : "";
@@ -587,11 +578,6 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
                         $product[$i]['variants'][$k]['price'] =  strval($product[$i]['variants'][$k]['price'] + $price_tax_amount);
                         $special_price_tax_amount = $product[$i]['variants'][$k]['special_price'] * ($percentage / 100);
                         $product[$i]['variants'][$k]['special_price'] =  strval($product[$i]['variants'][$k]['special_price'] + $special_price_tax_amount);
-                    }
-                    else{
-                        $product[$i]['variants'][$k]['price'] =  strval($product[$i]['variants'][$k]['price']);
-                        $product[$i]['variants'][$k]['special_price'] =  strval($product[$i]['variants'][$k]['special_price']);
-
                     }
                     if (isset($user_id) && $user_id != NULL) {
                         $user_cart_data = $t->db->select('qty as cart_count')->where(['product_variant_id' => $product[$i]['variants'][$k]['id'], 'user_id' => $user_id, 'is_saved_for_later' => 0])->get('cart')->result_array();
@@ -716,7 +702,6 @@ function fetch_product($user_id = NULL, $filter = NULL, $id = NULL, $category_id
         $attribute_values_ids = implode(",", $attribute_values_ids);
         $attr_value_ids = array_filter(array_unique(explode(',', $attribute_values_ids)));
     }
-   
     $response['min_price'] = $min_price;
     $response['max_price'] = $max_price;
     $response['product'] = $product;
@@ -1710,7 +1695,6 @@ function get_cart_total($user_id, $product_variant_id = false, $is_saved_for_lat
         }
         $variant_id[$i] = $data[$i]['id'];
         $quantity[$i] = intval($data[$i]['qty']);
-       
         if (floatval($data[$i]['special_price']) > 0) {
             $total[$i] = floatval($data[$i]['special_price'] + $special_price_tax_amount) * $data[$i]['qty'];
         } else {
@@ -1730,7 +1714,6 @@ function get_cart_total($user_id, $product_variant_id = false, $is_saved_for_lat
         $data[$i]['product_variants'] = get_variants_values_by_id($data[$i]['id']);
     }
     $total = array_sum($total);
-   
     $system_settings = get_settings('system_settings', true);
     $delivery_charge = $system_settings['delivery_charge'];
     if (!empty($address_id)) {
@@ -2135,11 +2118,10 @@ function fetch_orders($order_id = NULL, $user_id = NULL, $status = NULL, $delive
     }
 
     $order_details = $search_res->get('`orders` o')->result_array();
-    
 
     for ($i = 0; $i < count($order_details); $i++) {
         $pr_condition = ($user_id != NULL && !empty(trim($user_id)) && is_numeric($user_id)) ? " and pr.user_id = $user_id " : "";
-        $t->db->select('oi.*,p.id as product_id,p.is_cancelable,p.cancelable_till,sd.store_name,u.longitude as seller_longitude,u.mobile as seller_mobile,u.address as seller_address,u.latitude as seller_latitude,(select username from users where id=oi.delivery_boy_id) as delivery_boy_name ,sd.store_description,sd.rating as seller_rating,sd.logo as seller_profile,ot.courier_agency,ot.tracking_id,ot.url,u.username as seller_name,p.is_returnable,
+        $t->db->select('oi.*,p.id as product_id,p.is_cancelable,sd.store_name,u.longitude as seller_longitude,u.mobile as seller_mobile,u.address as seller_address,u.latitude as seller_latitude,(select username from users where id=oi.delivery_boy_id) as delivery_boy_name ,sd.store_description,sd.rating as seller_rating,sd.logo as seller_profile,ot.courier_agency,ot.tracking_id,ot.url,u.username as seller_name,p.is_returnable,
         pv.special_price,pv.price as main_price,p.image,p.name,p.rating as product_rating,p.type,pr.rating as user_rating, pr.images as user_rating_images, pr.comment as user_rating_comment,oi.status as status,
         (Select count(id) from order_items where order_id = oi.order_id ) as order_counter ,
         (Select count(active_status) from order_items where active_status ="cancelled" and order_id = oi.order_id ) as order_cancel_counter , (Select count(active_status) from order_items where active_status ="returned" and order_id = oi.order_id ) as order_return_counter ')
@@ -2183,6 +2165,7 @@ function fetch_orders($order_id = NULL, $user_id = NULL, $status = NULL, $delive
         $order_details[$i]['courier_agency'] = "";
         $order_details[$i]['tracking_id'] = "";
         $order_details[$i]['url'] = "";
+
         $returnable_count = 0;
         $cancelable_count = 0;
         $already_returned_count = 0;
@@ -2232,8 +2215,7 @@ function fetch_orders($order_id = NULL, $user_id = NULL, $status = NULL, $delive
                 $order_item_data[$k]['status'] = json_decode($order_item_data[$k]['status']);
                 if (!in_array($order_item_data[$k]['active_status'], ['returned', 'cancelled'])) {
                     $total_tax_percent = $total_tax_percent +  $order_item_data[$k]['tax_percent'];
-                    // $total_tax_amount  = $total_tax_amount + $order_item_data[$k]['tax_amount'];
-                    $total_tax_amount  =  $order_item_data[$k]['tax_amount'] * $order_item_data[$k]['quantity'];
+                    $total_tax_amount  = $total_tax_amount + $order_item_data[$k]['tax_amount'];
                 }
                 $order_item_data[$k]['image_sm'] = (empty($order_item_data[$k]['image']) || file_exists(FCPATH . $order_item_data[$k]['image']) == FALSE) ? base_url(NO_IMAGE) : get_image_url($order_item_data[$k]['image'], 'thumb', 'sm');
                 $order_item_data[$k]['image_md'] = (empty($order_item_data[$k]['image']) || file_exists(FCPATH . $order_item_data[$k]['image']) == FALSE) ? base_url(NO_IMAGE) : get_image_url($order_item_data[$k]['image'], 'thumb', 'md');
@@ -2279,11 +2261,10 @@ function fetch_orders($order_id = NULL, $user_id = NULL, $status = NULL, $delive
         }
         if ((isset($delivery_boy_id) && $delivery_boy_id != null) || (isset($seller_id) && $seller_id != null)) {
             $order_details[$i]['total'] = strval($item_subtotal - $total_tax_amount);
-           
             $order_details[$i]['final_total'] = strval($item_subtotal - $total_tax_amount +  $order_details[$i]['delivery_charge']);
             $order_details[$i]['total_payable'] = strval($item_subtotal - $total_tax_amount +  $order_details[$i]['delivery_charge']);
         } else {
-            $order_details[$i]['total'] = strval($order_details[$i]['total']);
+            $order_details[$i]['total'] = strval($order_details[$i]['total'] - $total_tax_amount);
         }
         $order_details[$i]['address'] = (isset($order_details[$i]['address']) && !empty($order_details[$i]['address'])) ? output_escaping($order_details[$i]['address']) : "";
         $order_details[$i]['username'] = output_escaping($order_details[$i]['username']);
@@ -2958,6 +2939,15 @@ function get_cities($id = NULL, $limit = NULL, $offset = NULL)
     return $CI->db->get('cities')->result_array();
 }
 
+function get_countries($id = NULL, $limit = NULL, $offset = NULL)
+{
+    $CI = &get_instance();
+    if (!empty($limit) || !empty($offset)) {
+        $CI->db->limit($limit, $offset);
+    }
+    return $CI->db->get('countries')->result_array();
+}
+
 function get_favorites($user_id, $limit = NULL, $offset = NULL)
 {
     $CI = &get_instance();
@@ -3165,10 +3155,10 @@ function verify_payment_transaction($txn_id, $payment_method, $additional_data =
             }
             break;
 
-        case 'stripe':
-            # code...
-            return "stripe is supplied";
-            break;
+            case 'stripe':
+                # code...
+                return "stripe is supplied";
+                break;
 
 
         case 'paytm':
@@ -3720,7 +3710,7 @@ function process_refund_old($id, $status, $type = 'order_items')
                         $total = $total - $returnable_amount < 0 ? 0 : $total - $returnable_amount;
                         $final_total = $final_total - $returnable_amount < 0 ? 0 : $final_total - $returnable_amount;
                         $total_payable = $total_payable - $returnable_amount < 0 ? 0 : $total_payable - $returnable_amount;
-                       
+                        echo "1" . $total_payable;
                     } else {
                         if ($current_price <=  $wallet_balance) {
                             if ((($order_counter == $order_cancel_counter && $status == 'cancelled') ||  ($order_counter == $order_return_counter && $status == 'returned')) && $is_delivery_charge_returnable == 1) {
@@ -3750,7 +3740,7 @@ function process_refund_old($id, $status, $type = 'order_items')
                             $total = $total - $returnable_amount < 0 ? 0 : $total - $returnable_amount;
                             $final_total = $final_total - $returnable_amount < 0 ? 0 : $final_total - $returnable_amount;
                             $total_payable = $total_payable - $returnable_amount < 0 ? 0 : $total_payable - $returnable_amount;
-                          
+                            echo "2" . $total_payable;
                         } else {
                             if ($wallet_balance > 0) {
                                 if ($wallet_balance <= $current_price) {
@@ -3795,13 +3785,13 @@ function process_refund_old($id, $status, $type = 'order_items')
                                     $total = $total - $returnable_amount < 0 ? 0 : $total - $returnable_amount;
                                     $final_total = $final_total - $returnable_amount < 0 ? 0 : $final_total - $returnable_amount;
                                     $total_payable = $total_payable - $returnable_amount < 0 ? 0 : $total_payable - $returnable_amount;
-                                  
+                                    echo "3" . $total_payable;
                                 }
                             } else {
                                 $total = $total - $current_price < 0 ? 0 : $total - $current_price;
                                 $final_total = $final_total - $current_price < 0 ? 0 : $final_total - $current_price;
                                 $total_payable = $total_payable - $current_price < 0 ? 0 : $total_payable - $current_price;
-                                
+                                echo "4" . $total_payable;
                             }
                         }
                     }
@@ -3834,7 +3824,7 @@ function process_refund_old($id, $status, $type = 'order_items')
                         $total = $total - $returnable_amount < 0 ? 0 : $total - $returnable_amount;
                         $final_total = $final_total - $returnable_amount < 0 ? 0 : $final_total - $returnable_amount;
                         $total_payable = $total_payable - $returnable_amount < 0 ? 0 : $total_payable - $returnable_amount;
-                       
+                        echo "5" . $total_payable;
                     } else {
 
                         if ($current_price <=  $wallet_balance) {
@@ -3883,19 +3873,19 @@ function process_refund_old($id, $status, $type = 'order_items')
                                     $total = $total - $returnable_amount < 0 ? 0 : $total - $returnable_amount;
                                     $final_total = $final_total - $returnable_amount < 0 ? 0 : $final_total - $returnable_amount;
                                     $total_payable = $total_payable - $returnable_amount < 0 ? 0 : $total_payable - $returnable_amount;
-                                   
+                                    echo "6" . $total_payable;
                                 }
                             } else {
                                 $total = $total - $current_price < 0 ? 0 : $total - $current_price;
                                 $final_total = $final_total - $current_price < 0 ? 0 : $final_total - $current_price;
                                 $total_payable = $total_payable - $current_price < 0 ? 0 : $total_payable - $current_price;
-                               
+                                echo "7" . $total_payable;
                             }
                         } else {
                             $total = $total - $current_price < 0 ? 0 : $total - $current_price;
                             $final_total = $final_total - $current_price < 0 ? 0 : $final_total - $current_price;
                             $total_payable = $total_payable - $current_price < 0 ? 0 : $total_payable - $current_price;
-                            
+                            echo "8" . $total_payable;
                         }
                     }
                 }
@@ -4056,8 +4046,6 @@ function get_user_balance($user_id)
     }
 }
 
-
-
 function get_stock($id, $type)
 {
     $t = &get_instance();
@@ -4136,6 +4124,7 @@ function is_product_delivarable($type, $type_id, $product_id)
 
 function check_cart_products_delivarable($area_id, $user_id)
 {
+
     $products = $tmpRow = array();
     $cart = get_cart_total($user_id);
     if (!empty($cart)) {
@@ -4165,7 +4154,7 @@ function orders_count($status = "", $seller_id = "")
     }
     if (!empty($seller_id)) {
         $t->db->where('seller_id', $seller_id);
-        // $t->db->where("active_status != 'awaiting' ");
+       // $t->db->where("active_status != 'awaiting' ");
     }
     $result = $t->db->from("order_items")->get()->result_array();
     return $result[0]['total'];
@@ -4292,86 +4281,3 @@ function labels($label, $alt = '')
         return trim($alt);
     }
 }
-
-
-
-// function is_single_seller($product_variant_id, $user_id)
-// {
-//     $t = &get_instance();
-
-    
-//     if (isset($product_variant_id) && !empty($product_variant_id) && $product_variant_id != "" && isset($user_id) && !empty($user_id) && $user_id != "") {
-//         $pv_id = (strpos($product_variant_id, ",")) ? explode(",", $product_variant_id) : $product_variant_id;
-
-//         // get exist data from cart if any 
-//         $exist_data = $t->db->select('`c`.product_variant_id,p.seller_id')
-//             ->join('product_variants pv ', 'pv.id=c.product_variant_id')
-//             ->join('products p ', 'pv.product_id=p.id')
-//             ->where(['user_id' => $user_id])->group_by('p.seller_id')->get('cart c')->result_array();
-//         if (!empty($exist_data)) {
-//             $seller_id = array_values(array_unique(array_column($exist_data, "seller_id")));
-//         } else {
-//             // clear to add cart
-//             return true;
-//         }
-//         // get seller ids of varients
-//         $new_data = $t->db->select('p.seller_id')
-//             ->join('products p ', 'pv.product_id=p.id')
-//             ->where_in('pv.id', $pv_id)->get('product_variants pv')->result_array();
-//         $new_seller_id = $new_data[0]["seller_id"];
-//         if (!empty($seller_id) && !empty($new_seller_id)) {
-//             if (in_array($new_seller_id, $seller_id)) {
-//                 // clear to add to cart
-//                 return true;
-//             } else {
-//                 // another seller id verient, give single seller error
-//                 return false;
-//             }
-//         } else {
-//             return false;
-//         }
-//     } else {
-//         return false;
-//     }
-// }
-function is_single_seller($product_variant_id, $user_id)
-{
-    $t = &get_instance();
-    if (isset($product_variant_id) && !empty($product_variant_id) && $product_variant_id != "" && isset($user_id) && !empty($user_id) && $user_id != "") {
-        $pv_id = (strpos($product_variant_id, ",")) ? explode(",", $product_variant_id) : $product_variant_id;
-        // get exist data from cart if any
-        $exist_data = $t->db->select('`c`.product_variant_id,p.seller_id')
-            ->join('product_variants pv ', 'pv.id=c.product_variant_id')
-            ->join('products p ', 'pv.product_id=p.id')
-            ->where(['user_id' => $user_id, 'is_saved_for_later' => 0])->group_by('p.seller_id')->get('cart c')->result_array();
-        if (!empty($exist_data)) {
-            $seller_id = array_values(array_unique(array_column($exist_data, "seller_id")));
-        } else {
-            // clear to add cart
-            return true;
-        }
-        // get seller ids of varients
-        $new_data = $t->db->select('p.seller_id')
-            ->join('products p ', 'pv.product_id=p.id')
-            ->where_in('pv.id', $pv_id)->get('product_variants pv')->result_array();
-        $new_seller_id = $new_data[0]["seller_id"];
-        if (!empty($seller_id) && !empty($new_seller_id)) {
-            if (in_array($new_seller_id, $seller_id)) {
-                // clear to add to cart
-                return true;
-            } else {
-                // another seller id verient, give single seller error
-                return false;
-            }
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-}
-
-
-
-
-

@@ -37,7 +37,7 @@ class Sales_report_model extends CI_Model
             $count_res->join(' `order_items` oi', 'oi.order_id=o.id');
             $count_res->where("oi.seller_id=" . $seller_id);
         }
-        
+        //print_r($this->db->last_query());
         if (!empty($_GET['start_date']) && !empty($_GET['end_date'])) {
 
             $count_res->where(" DATE(o.date_added) >= DATE('" . $_GET['start_date'] . "') ");

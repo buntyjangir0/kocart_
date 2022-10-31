@@ -44,7 +44,6 @@ Defined Methods:-
 36. get_sales_list
 37. update_product_status
 38. get_countries_data
-39. get_brands_data
 ---------------------------------------------------------------------------
 */
 
@@ -110,7 +109,7 @@ Defined Methods:-
                 print_r(json_encode($response));
                 return false;
             }
-            JWT::$leeway = 2000;
+            JWT::$leeway = 60;
             $flag = true; //For payload indication that it return some data or throws an expection.
             $error = true; //It will indicate that the payload had verified the signature and hash is valid or not.
             foreach ($api_keys as $row) {
@@ -227,9 +226,8 @@ Defined Methods:-
                 $tempRow['created_at'] = (isset($row['created_at']) && !empty($row['created_at'])) ? $row['created_at'] : '';
                 $rows[] = $tempRow;
             }
-           $seller_data = fetch_details('seller_data', ['user_id' => $data[0]['id']]);
-           
-           $data = array_values(array_merge($rows, $seller_data));
+            $seller_data = fetch_details('seller_data', ['user_id' => $data[0]['id']]);
+            $data = array_values(array_merge($rows, $seller_data));
             for ($i = 0; $i < count($seller_data); $i++) {
                 $seller_data[$i]['logo'] = base_url() . $seller_data[$i]['logo'];
                 $seller_data[$i]['national_identity_card'] = base_url() . $seller_data[$i]['national_identity_card'];
@@ -250,7 +248,7 @@ Defined Methods:-
                 //if the login is successful
                 $response['error'] = (isset($seller_data[0]['status']) && $seller_data[0]['status'] != "" && ($seller_data[0]['status'] == 1 || $seller_data[0]['status'] == 0)) ? false : true;
                 $response['message'] =  $messages[$seller_data[0]['status']];
-                $response['data'] = (isset($seller_data[0]['status']) && $seller_data[0]['status'] != "" && ($seller_data[0]['status'] == 1 || $seller_data[0]['status'] == 0)) ?  $out     : [];
+                $response['data'] = (isset($seller_data[0]['status']) && $seller_data[0]['status'] != "" && ($seller_data[0]['status'] == 1 || $seller_data[0]['status'] == 0)) ?  $out : [];
                 echo json_encode($response);
                 return false;
             } else {
@@ -1402,35 +1400,10 @@ Defined Methods:-
             $limit = ($this->input->post('limit', true)) ? $this->input->post('limit', true) : null;
             $offset = ($this->input->post('offset', true)) ? $this->input->post('offset', true) : null;
             $userData = fetch_details('payment_requests', ['user_id' => $_POST['user_id']], '*', $limit, $offset);
-
-            $bulkData = array();
-            $rows = array();
-            $tempRow = array();
-            foreach ($userData as $row) {
-                $row = output_escaping($row);
-                
-                $tempRow['id'] = $row['id'];
-                $tempRow['user_id'] = $row['user_id'];
-                $tempRow['payment_type'] = $row['payment_type'];
-                $tempRow['amount_requested'] = $row['amount_requested'];
-                $tempRow['remarks'] = $row['remarks'];
-                $tempRow['payment_address'] = $row['payment_address'];
-                $status = [
-                    '0' => 'pending',
-                    '1' => 'approved',
-                    '2' => 'rejected',
-                ];
-                $tempRow['status_code'] = $row['status'];
-                $tempRow['status'] = $status[$row['status']];
-                $tempRow['date_created'] = $row['date_created'];
-
-                $rows[] = $tempRow;
-            }
-            //$bulkData['rows'] = $rows;
             $this->response['error'] = false;
             $this->response['message'] = 'Withdrawal Request Retrieved Successfully';
             $this->response['total'] = strval(count($userData));
-            $this->response['data'] = $rows;
+            $this->response['data'] = $userData;
             print_r(json_encode($this->response));
         }
     }
@@ -1557,7 +1530,6 @@ Defined Methods:-
             pro_input_tax:tax_id
             indicator:1             //{ 0 - none | 1 - veg | 2 - non-veg }
             made_in: india          //{optional}
-            brand: adidas          //{optional}
             total_allowed_quantity:100
             minimum_order_quantity:12
             quantity_step_size:1
@@ -1630,7 +1602,6 @@ Defined Methods:-
         $this->form_validation->set_rules('image', 'Image', 'trim|xss_clean', array('required' => 'Image is required'));
         $this->form_validation->set_rules('other_image', 'Other Image', 'trim|xss_clean');
         $this->form_validation->set_rules('made_in', 'Made In', 'trim|xss_clean');
-        $this->form_validation->set_rules('brand', 'Brand', 'trim|xss_clean');
         $this->form_validation->set_rules('product_type', 'Product type', 'trim|required|xss_clean');
         $this->form_validation->set_rules('total_allowed_quantity', 'Total Allowed Quantity', 'trim|xss_clean');
         $this->form_validation->set_rules('minimum_order_quantity', 'Minimum Order Quantity', 'trim|xss_clean');
@@ -2284,7 +2255,6 @@ Defined Methods:-
             pro_input_tax:tax_id
             indicator:1             //{ 0 - none | 1 - veg | 2 - non-veg }
             made_in: india          //{optional}
-            brand: adidas          //{optional}
             total_allowed_quantity:100
             minimum_order_quantity:12
             quantity_step_size:1
@@ -2357,7 +2327,6 @@ Defined Methods:-
         $this->form_validation->set_rules('image', 'Image', 'trim|xss_clean', array('required' => 'Image is required'));
         $this->form_validation->set_rules('other_image', 'Other Image', 'trim|xss_clean');
         $this->form_validation->set_rules('made_in', 'Made In', 'trim|xss_clean');
-        $this->form_validation->set_rules('brand', 'Brand', 'trim|xss_clean');
         $this->form_validation->set_rules('product_type', 'Product type', 'trim|required|xss_clean');
         $this->form_validation->set_rules('total_allowed_quantity', 'Total Allowed Quantity', 'trim|xss_clean');
         $this->form_validation->set_rules('minimum_order_quantity', 'Minimum Order Quantity', 'trim|xss_clean');
@@ -3169,29 +3138,6 @@ Defined Methods:-
             print_r(json_encode($result));
         }
     }
-
-    public function get_brands_data()
-    {
-        if (!$this->verify_token()) {
-            return false;
-        }
-        $this->form_validation->set_rules('search', 'search', 'trim|xss_clean');
-        $this->form_validation->set_rules('offset', 'Offset', 'trim|numeric|xss_clean');
-        $this->form_validation->set_rules('limit', 'Limit', 'trim|numeric|xss_clean');
-        if (!$this->form_validation->run()) {
-            $this->response['error'] = true;
-            $this->response['message'] = strip_tags(validation_errors());
-            $this->response['data'] = array();
-            print_r(json_encode($this->response));
-        } else {
-            $search = (isset($_POST['search']) && !empty(trim($_POST['search']))) ? $this->input->post('search', true) : "";
-            $offset = ($this->input->post('offset', true)) ? $this->input->post('offset', true) : 0;
-            $limit = ($this->input->post('limit', true)) ? $this->input->post('limit', true) : 25;
-            $result = $this->Product_model->get_brand_list($search, $offset, $limit);
-            print_r(json_encode($result));
-        }
-    }
-
     /* add_product_faqs */
     public function add_product_faqs()
     {
@@ -3468,5 +3414,11 @@ Defined Methods:-
             return;
         }
     }
-    
+    // public function test()
+    // {
+       
+    //     $order_data = fetch_orders(207);
+    //     $user_id = $order_data['order_data'][0]['user_id'];
+    //     print_r($user_id);
+    // }
 }

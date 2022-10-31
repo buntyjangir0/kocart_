@@ -34,15 +34,22 @@
                     <h1 class="h4"><?= !empty($this->lang->line('orders')) ? $this->lang->line('orders') : 'Orders' ?></h1>
                 </div>
                 <div class="card-body orders-section p-2">
+                
                     <?php
                     foreach ($orders['order_data'] as $row) {
+                    
+                        $orderID = $row['id'];
+                        $order_trakings = $this->Order_model->get_traking($orderID);
+                        $trak = json_decode($order_trakings->completeData);
                     ?>
                         <div class=" border-0">
                             <div class="card-header bg-white p-2">
                                 <div class="row justify-content-between">
                                     <div class="col">
                                         <p class="text-muted"> <?= !empty($this->lang->line('order_id')) ? $this->lang->line('order_id') : 'Order ID' ?> <span class="font-weight-bold text-dark"> : <?= $row['id'] ?></span></p>
-                                        <p class="text-muted"> <?= !empty($this->lang->line('place_on')) ? $this->lang->line('place_on') : 'Place On' ?> <span class="font-weight-bold text-dark"> : <?= $row['date_added'] ?></span> </p>
+                                        <p class="text-muted">Order Number<span class="font-weight-bold text-dark"> :<?php if(!empty($trak[0]->Order_No)){ echo $trak[0]->Order_No; }else { echo "N/A"; }?></span></p>
+                                        <p class="text-muted">Tracking Number<span class="font-weight-bold text-dark"> : <?php if(!empty($trak[0]->Detail->BL_No)){ echo $trak[0]->Detail->BL_No; } else { echo "N/A"; } ?></span></p>
+                                    <p class="text-muted"> <?= !empty($this->lang->line('place_on')) ? $this->lang->line('place_on') : 'Place On' ?> <span class="font-weight-bold text-dark"> : <?= $row['date_added'] ?></span> </p>
                                         <?php if ($row['otp'] != 0) { ?>
                                             <p class="text-muted"> <?= !empty($this->lang->line('otp')) ? $this->lang->line('otp') : 'OTP' ?> <span class="font-weight-bold text-dark"> : <?= $row['otp'] ?></span> </p>
                                         <?php } ?>
@@ -72,6 +79,37 @@
                                     <?php } ?>
                                 </div>
                             </div>
+                            <div class="card-footer bg-white px-sm-3 pt-sm-4 px-0">
+                                    <div class="row text-center ">
+                                        <?php
+                                        $status = ["awaiting", "received", "processed", "shipped", "delivered", "cancelled", "returned"];
+                                        $cancelable_till = $item['cancelable_till'];
+                                        $active_status = $item['active_status'];
+                                        $cancellable_index = array_search($cancelable_till, $status);
+                                        $active_index = array_search($active_status, $status);
+                                        if (!$item['is_already_cancelled'] && $item['is_cancelable'] && $active_index <= $cancellable_index) { ?>
+                                            <div class="col my-auto">
+                                                <h5>
+                                                    <a class="update-order block button-sm buttons btn-6-1 mt-3 m-0" data-status="cancelled" data-order-id="<?= $row['id'] ?>"><?= !empty($this->lang->line('cancel')) ? $this->lang->line('cancel') : 'Cancel' ?></a>
+                                                </h5>
+                                            </div>
+                                        <?php } ?>
+                                        <?php if ($row['is_returnable'] && !$row['is_already_returned']) { ?>
+                                            <div class="col my-auto ">
+                                                <h5><a class="update-order block button-sm buttons btn-6-3 mt-3 m-0" data-status="returned" data-order-id="<?= $row['id'] ?>"><?= !empty($this->lang->line('return')) ? $this->lang->line('return') : 'Return' ?></a></h5>
+                                            </div>
+                                        <?php } ?>
+                                        <?php if ($row['payment_method'] == 'Bank Transfer') { ?>
+                                            <div class="col my-auto ">
+                                                <h5>
+                                                    <a class="block button-sm buttons btn-6-5 mt-3 m-0" href="<?= base_url('my-account/order-details/' . $row['id']) ?>"> Send Bank Payment Receipt</i>
+                                                        <!-- <input type="file"  name="receipt" class="form-control"/>  -->
+                                                    </a>
+                                                </h5>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
                         </div>
                     <?php } ?>
                     <div class="text-center">

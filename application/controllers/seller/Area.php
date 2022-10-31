@@ -35,7 +35,7 @@ class Area extends CI_Controller
             $this->data['title'] = 'Countries Management | ' . $settings['app_name'];
             $this->data['meta_description'] = ' Countries Management  | ' . $settings['app_name'];
             $this->data['countries'] = fetch_details('countries', '');
-       
+            // print_r($this->data['countries']);
             $this->load->view('seller/template', $this->data);
         } else {
             redirect('seller/login', 'refresh');

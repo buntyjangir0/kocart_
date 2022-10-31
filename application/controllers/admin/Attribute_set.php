@@ -59,6 +59,7 @@ class Attribute_set extends CI_Controller
             }
         }
 
+
         if ($this->ion_auth->logged_in() && $this->ion_auth->is_admin()) {
             $this->form_validation->set_rules('name', 'Name', 'trim|required|xss_clean');
             if (!$this->form_validation->run()) {
@@ -95,7 +96,7 @@ class Attribute_set extends CI_Controller
                 $this->response['error'] = false;
                 $this->response['csrfName'] = $this->security->get_csrf_token_name();
                 $this->response['csrfHash'] = $this->security->get_csrf_hash();
-                $this->response['message'] = 'Attribute Added Succesfully';
+                $this->response['message'] = 'Product Added Succesfully';
                 $message = (isset($_POST['edit_attribute_set'])) ? 'Attribute Set Updated Successfully' : 'Attribute Set Added Successfully';
                 $this->response['message'] = $message;
                 print_r(json_encode($this->response));

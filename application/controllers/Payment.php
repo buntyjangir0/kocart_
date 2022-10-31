@@ -11,8 +11,8 @@ class Payment extends CI_Controller
         $this->load->model(['cart_model', 'address_model', 'order_model', 'transaction_model']);
         $this->data['is_logged_in'] = ($this->ion_auth->logged_in()) ? 1 : 0;
         $this->data['user'] = ($this->ion_auth->logged_in()) ? $this->ion_auth->user()->row() : array();
-        $this->response['csrfName'] = $this->security->get_csrf_token_name();
-        $this->response['csrfHash'] = $this->security->get_csrf_hash();
+        $this->response['csrfName'] = 'param2000';//$this->security->get_csrf_token_name();
+        $this->response['csrfHash'] = '8aba78f543af8cc575dcd28e453d7ba2'; //$this->security->get_csrf_hash();
         $this->data['settings'] = get_settings('system_settings', true);
         $this->data['web_settings'] = get_settings('web_settings', true);
     }

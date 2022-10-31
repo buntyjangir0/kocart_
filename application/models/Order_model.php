@@ -620,6 +620,28 @@ class Order_model extends CI_Model
                     $total_amt += $item['sub_total'];
                     $total_qty += $item['quantity'];
                 }
+            
+            	// order traking details 
+                $orderID = $row['id'];
+                $order_trakings = $this->Order_model->get_traking($orderID);
+                $trak = json_decode($order_trakings->completeData);
+                if(!empty($trak[0]->Order_No))
+                { 
+                    $order_numbe = $trak[0]->Order_No;
+                }
+                else 
+                { 
+                    $order_numbe =  "N/A"; 
+                }
+                
+                if(!empty($trak[0]->Detail->BL_No))
+                { 
+                    $bl_numbe = $trak[0]->Detail->BL_No;
+                }
+                else 
+                { 
+                    $bl_numbe =  "N/A"; 
+                }
 
                 $items1 = $temp;
                 $discounted_amount = $row['total'] * $row['items'][0]['discount'] / 100;
@@ -627,6 +649,8 @@ class Order_model extends CI_Model
                 $discount_in_rupees = $row['total'] - $final_total;
                 $discount_in_rupees = floor($discount_in_rupees);
                 $tempRow['id'] = $row['id'];
+            	$tempRow['order_number'] = $order_numbe;
+                $tempRow['bl_number'] = $bl_numbe;
                 $tempRow['user_id'] = $row['user_id'];
                 $tempRow['name'] = $row['items'][0]['uname'];
                 if (defined('ALLOW_MODIFICATION') && ALLOW_MODIFICATION == 0) {
@@ -976,7 +1000,7 @@ class Order_model extends CI_Model
 
         if (isset($_GET['search']) and $_GET['search'] != '') {
             $search = $_GET['search'];
-            $multipleWhere = ['`id`' => $search, '`order_id`' => $search, '`tracking_id`' => $search, 'courier_agency' => $search, 'order_item_id' => $search, 'url' => $search];
+            $multipleWhere = ['`id`' => $search, '`order_id`' => $search, '`tracking_id`' => $search, 'courier_agency' => $search, 'order_item_id' => $search, 'url' => $search, 'invoice_url' => $search];
         }
         if (isset($_GET['order_id']) and $_GET['order_id'] != '') {
             $where = ['order_id' => $_GET['order_id']];
@@ -1029,7 +1053,8 @@ class Order_model extends CI_Model
             $tempRow['order_item_id'] = $row['order_item_id'];
             $tempRow['courier_agency'] = $row['courier_agency'];
             $tempRow['tracking_id'] = $row['tracking_id'];
-            $tempRow['url'] = $row['url'];
+            $tempRow['url'] = "<a href='".$row['url']."' target='blank'>".$row['url']."</a>";
+        	$tempRow['invoice_url'] = "<a href='".$row['invoice_url']."' target='blank'>".$row['invoice_url']."</a>";
             $tempRow['date'] = $row['date_created'];
             $tempRow['operate'] = $operate;
 
@@ -1196,5 +1221,107 @@ class Order_model extends CI_Model
             $response['data'] = array();
             return $response;
         }
+    }
+
+	public function get_Order($orderid)
+    {
+        $this -> db -> select('*');
+		$this -> db -> from('orders');
+		$this -> db -> where('id',$orderid);
+		$query = $this -> db -> get();
+		//echo $this->db->last_query ();
+		if($query -> num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return false;
+		}
+    }
+    
+    public function getOrderItem($orderid)
+	{
+		$this -> db -> select('*');
+		$this -> db -> from('order_items');
+		$this -> db -> where('order_id',$orderid);
+		$query = $this -> db -> get();
+		//echo $this->db->last_query ();
+		if($query -> num_rows() >= 1)
+		{
+			return $query->result();
+		}
+		else
+		{
+			return false;
+		}
+	}
+    
+    public function getUserDetails($userId)
+    {
+        $this -> db -> select('*');
+		$this -> db -> from('users');
+		$this -> db -> where('id',$userId);
+		$query = $this -> db -> get();
+		//echo $this->db->last_query ();
+		if($query -> num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return false;
+		}
+    }
+    
+    public function getUseraddress($addressId)
+    {
+        $this -> db -> select('*');
+		$this -> db -> from('addresses');
+		$this -> db -> where('id',$addressId);
+		$query = $this -> db -> get();
+		//echo $this->db->last_query ();
+		if($query -> num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return false;
+		}
+    }
+    
+    public function getcity($cityId)
+    {
+        $this -> db -> select('*');
+		$this -> db -> from('cities');
+		$this -> db -> where('id',$cityId);
+		$query = $this -> db -> get();
+		//echo $this->db->last_query ();
+		if($query -> num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return false;
+		}
+    }
+    
+    public function get_traking($orderID)
+    {
+        $this -> db -> select('*');
+		$this -> db -> from('order_tracking_aci');
+		$this -> db -> where('order_id',$orderID);
+		$query = $this -> db -> get();
+		//echo $this->db->last_query ();
+		if($query -> num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return false;
+		}
     }
 }

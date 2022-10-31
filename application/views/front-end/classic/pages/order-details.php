@@ -7,8 +7,15 @@
                     <div class="card-header bg-white">
                         <div class="row justify-content-between">
                             <div class="col">
+                            <?php 
+                                $orderID = $order['id'];
+                                $order_trakings = $this->Order_model->get_traking($orderID);
+                                $trak = json_decode($order_trakings->completeData);
+                                ?>
                                 <p class="text-muted"> <?= !empty($this->lang->line('order_id')) ? $this->lang->line('order_id') : 'Order ID' ?><span class="font-weight-bold text-dark"> : <?= $order['id'] ?></span></p>
-                                <p class="text-muted"> <?= !empty($this->lang->line('place_on')) ? $this->lang->line('place_on') : 'Place On' ?><span class="font-weight-bold text-dark"> : <?= $order['date_added'] ?></span> </p>
+                            <p class="text-muted">Order Number<span class="font-weight-bold text-dark"> :<?php if(!empty($trak[0]->Order_No)){ echo $trak[0]->Order_No; }else { echo "N/A"; }?></span></p>
+                            <p class="text-muted">Tracking Number<span class="font-weight-bold text-dark"> : <?php if(!empty($trak[0]->Detail->BL_No)){ echo $trak[0]->Detail->BL_No; } else { echo "N/A"; } ?></span></p>    
+                            <p class="text-muted"> <?= !empty($this->lang->line('place_on')) ? $this->lang->line('place_on') : 'Place On' ?><span class="font-weight-bold text-dark"> : <?= $order['date_added'] ?></span> </p>
                             </div>
 
                             <div class="flex-col my-auto">
@@ -76,7 +83,7 @@
                                     $active_status = $item['active_status'];
                                     $cancellable_index = array_search($cancelable_till, $status);
                                     $active_index = array_search($active_status, $status);
-                                    if (!$item['is_already_cancelled'] && $item['is_cancelable'] && $active_index < $cancellable_index) { ?>
+                                    if (!$item['is_already_cancelled'] && $item['is_cancelable'] && $active_index <= $cancellable_index) { ?>
                                         <button class="button button-danger button-sm update-order-item" data-status="cancelled" data-item-id="<?= $item['id'] ?>"><?= !empty($this->lang->line('cancel')) ? $this->lang->line('cancel') : 'Cancel' ?></button>
                                     <?php } ?>
                                     <?php if (!$item['is_already_cancelled'] && !$item['is_already_returned'] && $item['is_returnable'] && $item['active_status'] == 'delivered') { ?>
@@ -178,7 +185,7 @@
                             $active_status = $item['active_status'];
                             $cancellable_index = array_search($cancelable_till, $status);
                             $active_index = array_search($active_status, $status);
-                            if (!$item['is_already_cancelled'] && $item['is_cancelable'] && $active_index < $cancellable_index) { ?>
+                            if (!$item['is_already_cancelled'] && $item['is_cancelable'] && $active_index <= $cancellable_index) { ?>
                                 <div class="col my-auto">
                                     <a class="update-order block button-sm buttons btn-6-1 mt-3 m-0" data-status="cancelled" data-order-id="<?= $order['id'] ?>"><?= !empty($this->lang->line('cancel')) ? $this->lang->line('cancel') : 'Cancel' ?></a>
                                 </div>

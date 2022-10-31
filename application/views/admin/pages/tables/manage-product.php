@@ -186,7 +186,6 @@
                                     <th data-field="id" data-sortable="true" data-visible='false'>ID</th>
                                     <th data-field="image" data-sortable="true">Image</th>
                                     <th data-field="name" data-sortable="false">Name</th>
-                                    <th data-field="brand" data-sortable="false">Brand</th>
                                     <th data-field="category_name" data-sortable="false">Category Name</th>
                                     <th data-field="rating" data-sortable="true">Rating</th>
                                     <th data-field="variations" data-sortable="true" data-visible='false'>Variations</th>

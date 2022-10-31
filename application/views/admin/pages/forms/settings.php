@@ -131,12 +131,13 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="system_timezone" for="system_timezone">System Timezone <span class='text-danger text-xs'>*</span></label>
-                                        <select id="system_timezone" name="system_timezone" required class="form-control col-md-12 select2">
+                                        <select id="system_timezone" name="system_timezone" required class="form-control col-md-12">
                                             <option value=" ">--Select Timezones--</option>
                                             <?php
-                                            foreach ($timezone as $t) { ?>
-                                                ?>
-                                                <option value="<?= $t["zone"] ?>" data-gmt="<?= $t['diff_from_GMT']; ?>" <?= (isset($settings['system_timezone']) && $settings['system_timezone'] == $t["zone"]) ? 'selected' : ''; ?>><?= $t['zone'] . ' - ' . $t['diff_from_GMT'] . ' - ' . $t['time']; ?> </option>
+                                            foreach ($timezone as $zone) {
+                                                $checked = (isset($settings['system_timezone']) &&  $settings['system_timezone'] == $zone[2])  ? 'selected' : '';
+                                            ?>
+                                                <option value="<?= $zone[2] ?>" <?= $checked ?> data-gmt="<?= $zone[1] ?>"><?= $zone[0] . ' - GMT ' . $zone[1] . ' - ' . $zone[2] ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>

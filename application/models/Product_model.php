@@ -32,7 +32,6 @@ class Product_model extends CI_Model
             $require_products_approval = $is_permit;
         }
         $made_in = (isset($data['made_in'])) ? $data['made_in'] : null;
-        $brand = (isset($data['brand'])) ? $data['brand'] : null;
         $indicator = $data['indicator'];
         $description = $data['pro_input_description'];
         $tags = (!empty($data['tags'])) ? $data['tags'] : "";
@@ -47,7 +46,7 @@ class Product_model extends CI_Model
         $tax = (isset($data['pro_input_tax']) && $data['pro_input_tax'] != 0 && !empty($data['pro_input_tax'])) ? $data['pro_input_tax'] : 0;
         $video_type = (isset($data['video_type']) && !empty($data['video_type'])) ? $data['video_type'] : "";
         $video = (!empty($video_type)) ? (($video_type == 'youtube' || $video_type == 'vimeo') ? $data['video'] : $data['pro_input_video']) : "";
-
+       
         $pro_data = [
             'name' => $data['pro_input_name'],
             'short_description' => $short_description,
@@ -57,7 +56,6 @@ class Product_model extends CI_Model
             'category_id' => $category_id,
             'seller_id' => $seller_id,
             'made_in' => $made_in,
-            'brand' => $brand,
             'indicator' => $indicator,
             'image' => $main_image_name,
             'total_allowed_quantity' => $total_allowed_quantity,
@@ -318,10 +316,11 @@ class Product_model extends CI_Model
         }
 
         $product_count = $count_res->get('products p')->result_array();
+
         foreach ($product_count as $row) {
             $total = $row['total'];
         }
-        $search_res = $this->db->select('product_variants.id AS id,c.name as category_name,sd.store_name, p.id as pid,p.rating,p.no_of_ratings,p.name, p.type, p.image, p.status,p.brand,product_variants.price , product_variants.special_price, product_variants.stock')
+        $search_res = $this->db->select('product_variants.id AS id,c.name as category_name,sd.store_name, p.id as pid,p.rating,p.no_of_ratings,p.name, p.type, p.image, p.status,product_variants.price , product_variants.special_price, product_variants.stock')
             ->join("categories c", "p.category_id=c.id")
             ->join("seller_data sd", "sd.user_id=p.seller_id ")
             ->join('product_variants', 'product_variants.product_id = p.id');
@@ -379,7 +378,6 @@ class Product_model extends CI_Model
         $rows = array();
         $tempRow = array();
         foreach ($pro_search_res as $row) {
-            
             $row = output_escaping($row);
             $operate = "<a href='view-product?edit_id=" . $row['pid'] . "'  class='btn btn-primary btn-xs mr-1 mb-1' title='View'><i class='fa fa-eye'></i></a>";
             $operate .= " <a href='create-product?edit_id=" . $row['pid'] . "' data-id=" . $row['pid'] . " class='btn btn-success btn-xs mr-1 mb-1' title='Edit' ><i class='fa fa-pen'></i></a>";
@@ -408,13 +406,11 @@ class Product_model extends CI_Model
             $tempRow['varaint_id'] = $row['id'];
             $tempRow['name'] = $row['name'] . '<br><small>' . ucwords(str_replace('_', ' ', $row['type'])) . '</small><br><small> By </small><b>' . $row['store_name'] . '</b>';
             $tempRow['type'] = $row['type'];
-            $tempRow['brand'] = $row['brand'];
             $tempRow['category_name'] = $row['category_name'];
             $tempRow['price'] =  ($row['special_price'] == null || $row['special_price'] == '0') ? $currency . $row['price'] : $currency . $row['special_price'];
             $tempRow['stock'] = $row['stock'];
             $variations = '';
             foreach ($attr_values as $variants) {
-                
                 if (isset($attr_values[0]['attr_name'])) {
 
                     if (!empty($variations)) {
@@ -424,7 +420,7 @@ class Product_model extends CI_Model
                     $attr_name = explode(',', $variants['attr_name']);
                     $varaint_values = explode(',', $variants['variant_values']);
                     for ($i = 0; $i < count($attr_name); $i++) {
-                        $variations .= '<b>' . $attr_name[$i] . '</b> : ' . $varaint_values[$i] .'&nbsp;&nbsp;<b> Varient id : </b>'.$variants['id'] . '<br>';
+                        $variations .= '<b>' . $attr_name[$i] . '</b> : ' . $varaint_values[$i] . '<br>';
                     }
                 }
             }
@@ -460,21 +456,6 @@ class Product_model extends CI_Model
         return $data;
     }
 
-    function get_brands($search_term = "")
-    {
-        // Fetch users
-        $this->db->select('*');
-        $this->db->where("name like '%" . $search_term . "%'");
-        $fetched_records = $this->db->get('brands');
-        $brands = $fetched_records->result_array();
-
-        // Initialize Array with fetched data
-        $data = array();
-        foreach ($brands as $brand) {
-            $data[] = array("id" => $brand['name'], "text" => $brand['name']);
-        }
-        return $data;
-    }
 
     function get_faqs_data($search_term = "")
     {
@@ -521,40 +502,6 @@ class Product_model extends CI_Model
             }
         }
         $bulkData['data'] = (empty($countries)) ? [] : $countries;
-        return $bulkData;
-    }
-
-    function get_brand_list($search = "", $offset = 0, $limit = 25)
-    {
-        $multipleWhere = '';
-        $where = array();
-        if (!empty($search)) {
-            $multipleWhere = [
-                '`name`' => $search,
-            ];
-        }
-        $search_res = $this->db->select('id,name,image');
-
-        if (isset($multipleWhere) && !empty($multipleWhere)) {
-            $search_res->group_start();
-            $search_res->or_like($multipleWhere);
-            $search_res->group_end();
-        }
-        if (isset($where) && !empty($where)) {
-            $search_res->where($where);
-        }
-        $brands = $search_res->limit($limit, $offset)->get('brands')->result_array();
-       
-        $bulkData = array();
-        $bulkData['error'] = (empty($brands)) ? true : false;
-        $bulkData['message'] = (empty($brands)) ? "Brands Not Found" : "Brands Retrived Successfully";
-        if (!empty($brands)) {
-            for ($i = 0; $i < count($brands); $i++) {
-                $brands[$i] = output_escaping($brands[$i]);
-                $brands[$i]['image'] = base_url() . $brands[$i]['image'];
-            }
-        }
-        $bulkData['data'] = (empty($brands)) ? [] : $brands;
         return $bulkData;
     }
 
@@ -607,9 +554,9 @@ class Product_model extends CI_Model
 
         //  count of total product faqs
         $count_res = $this->db->select(' COUNT(pf.id) as `total`')
-            ->join('users u', 'u.id=pf.user_id', 'left')
-            ->join('products p', 'p.id=pf.product_id', 'left');
-        
+            ->join('users u', 'u.id=pf.user_id','left')
+            ->join('products p', 'p.id=pf.product_id','left');
+        // print_r($this->db->last_query());
         // return;
         if (isset($multipleWhere) && !empty($multipleWhere)) {
             $count_res->group_start();
@@ -625,8 +572,8 @@ class Product_model extends CI_Model
         }
         // get product faqs data
         $search_res = $this->db->select('pf.*,u.username')
-            ->join('users u', 'u.id=pf.user_id', 'left')
-            ->join('products p', 'p.id=pf.product_id', 'left');
+            ->join('users u', 'u.id=pf.user_id','left')
+            ->join('products p', 'p.id=pf.product_id','left');
         if (isset($multipleWhere) && !empty($multipleWhere)) {
             $search_res->group_start();
             $search_res->or_like($multipleWhere);

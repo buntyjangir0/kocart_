@@ -5,7 +5,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Api extends CI_Controller
 {
 
-    
     /*
 ---------------------------------------------------------------------------
 Defined Methods:-
@@ -101,7 +100,6 @@ Defined Methods:-
    42. get_withdrawal_request
    43. rozarpay_create_order
    44. update_order_status
-
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
 
@@ -1176,7 +1174,6 @@ Defined Methods:-
                     $product_data = fetch_details('product_variants', ['id' => $tmp_cart_user_data[$i]['product_variant_id']],  'product_id,availability,price,special_price');
                     if (!empty($product_data[0]['product_id'])) {
                         $pro_details = fetch_product($_POST['user_id'], null, $product_data[0]['product_id']);
-                       
                         $price = $product_data[0]['special_price'] != '' && $product_data[0]['special_price'] != null && $product_data[0]['special_price'] > 0 && $product_data[0]['special_price'] < $product_data[0]['price'] ? $product_data[0]['special_price'] : $product_data[0]['price'];
                         if (!empty($pro_details['product'])) {
                             if (trim($pro_details['product'][0]['availability']) == 0 && $pro_details['product'][0]['availability'] != null) {
@@ -1203,7 +1200,6 @@ Defined Methods:-
                     }
                 }
             }
-
 
             if (empty($cart_user_data)) {
                 $this->response['error'] = true;
@@ -1292,108 +1288,7 @@ Defined Methods:-
         }
     }
 
-    // // manage_cart
-    // public function manage_cart()
-    // {
-    //     /*
-    //     Add/Update
-    //     user_id:2
-    //     product_variant_id:23
-    //     is_saved_for_later: 1 { default:0 }
-    //     qty:2 // pass 0 to remove qty
-    // */
-    //     if (!$this->verify_token()) {
-    //         return false;
-    //     }
-    //     $this->form_validation->set_rules('user_id', 'User', 'trim|numeric|required|xss_clean');
-    //     $this->form_validation->set_rules('product_variant_id', 'Product Variant', 'trim|required|xss_clean');
-    //     $this->form_validation->set_rules('qty', 'Quantity', 'trim|required|xss_clean|numeric');
-    //     $this->form_validation->set_rules('is_saved_for_later', 'Saved For Later', 'trim|xss_clean');
-
-    //     if (!$this->form_validation->run()) {
-    //         $this->response['error'] = true;
-    //         $this->response['message'] = strip_tags(validation_errors());
-    //         $this->response['data'] = array();
-    //         print_r(json_encode($this->response));
-    //         return;
-    //     } else {
-    //         $qty = $this->input->post('qty', true);
-    //         $saved_for_later = (isset($_POST['is_saved_for_later']) && $_POST['is_saved_for_later'] != "") ? $this->input->post('is_saved_for_later', true) : 0;
-    //         $check_status = ($qty == 0 || $saved_for_later == 1) ? false : true;
-    //         $settings = get_settings('system_settings', true);
-    //         $cart_count = get_cart_count($_POST['user_id']);
-    //         $is_variant_available_in_cart = is_variant_available_in_cart($_POST['product_variant_id'], $_POST['user_id']);
-    //         if (!$is_variant_available_in_cart) {
-    //             if ($cart_count[0]['total'] >= $settings['max_items_cart']) {
-
-    //                 $this->response['error'] = true;
-    //                 $this->response['message'] = 'Maximum ' . $settings['max_items_cart'] . ' Item(s) Can Be Added Only!';
-    //                 $this->response['data'] = array();
-    //                 print_r(json_encode($this->response));
-    //                 return;
-    //             }
-    //         }
-
-    //         if (!$this->cart_model->add_to_cart($_POST, $check_status)) {
-    //             $response = get_cart_total($_POST['user_id'], false);
-    //             $cart_user_data = $this->cart_model->get_user_cart($_POST['user_id'], 0);
-    //             $tmp_cart_user_data = $cart_user_data;
-    //             if (!empty($tmp_cart_user_data)) {
-    //                 for ($i = 0; $i < count($tmp_cart_user_data); $i++) {
-    //                     $product_data = fetch_details('product_variants', ['id' => $tmp_cart_user_data[$i]['product_variant_id']],  'product_id,availability');
-    //                     if (!empty($product_data[0]['product_id'])) {
-    //                         $pro_details = fetch_product($_POST['user_id'], null, $product_data[0]['product_id']);
-    //                         if (!empty($pro_details['product'])) {
-    //                             if (trim($pro_details['product'][0]['availability']) == 0 && $pro_details['product'][0]['availability'] != null) {
-    //                                 update_details(['is_saved_for_later' => '1'], $cart_user_data[$i]['id'], 'cart');
-    //                                 unset($cart_user_data[$i]);
-    //                             }
-
-    //                             if (!empty($pro_details['product'])) {
-    //                                 $cart_user_data[$i]['product_details'] = $pro_details['product'];
-    //                             } else {
-    //                                 delete_details(['id' => $cart_user_data[$i]['id']], 'cart');
-    //                                 unset($cart_user_data[$i]);
-    //                                 continue;
-    //                             }
-    //                         } else {
-    //                             delete_details(['id' => $cart_user_data[$i]['id']], 'cart');
-    //                             unset($cart_user_data[$i]);
-    //                             continue;
-    //                         }
-    //                     } else {
-    //                         delete_details(['id' => $cart_user_data[$i]['id']], 'cart');
-    //                         unset($cart_user_data[$i]);
-    //                         continue;
-    //                     }
-    //                 }
-    //             }
-
-    //             $this->response['error'] = false;
-    //             $this->response['message'] = 'Cart Updated !';
-    //             $this->response['cart'] = (isset($cart_user_data) && !empty($cart_user_data)) ? $cart_user_data : [];
-    //             $this->response['data'] = [
-    //                 'total_quantity' => ($_POST['qty'] == 0) ? '0' : strval($_POST['qty']),
-    //                 'sub_total' => strval($response['sub_total']),
-    //                 'total_items' => (isset($response[0]['total_items'])) ? strval($response[0]['total_items']) : "0",
-    //                 'tax_percentage' => (isset($response['tax_percentage'])) ? strval($response['tax_percentage']) : "0",
-    //                 'tax_amount' => (isset($response['tax_amount'])) ? strval($response['tax_amount']) : "0",
-    //                 'cart_count' => (isset($response[0]['cart_count'])) ? strval($response[0]['cart_count']) : "0",
-    //                 'max_items_cart' => $settings['max_items_cart'],
-    //                 'overall_amount' => $response['overall_amount'],
-    //             ];
-    //             print_r(json_encode($this->response));
-    //             return;
-    //         }
-    //     }
-    // }
-
-
-
-
-
-    // new addedd 
-
+    // manage_cart
     public function manage_cart()
     {
         /*
@@ -1418,45 +1313,10 @@ Defined Methods:-
             print_r(json_encode($this->response));
             return;
         } else {
-            $product_variant_id = $this->input->post('product_variant_id', true);
-            $user_id = $this->input->post('user_id', true);
-            $settings = get_settings('system_settings', true);
-
-            if (!is_exist(['id' => $product_variant_id], "product_variants")) {
-                $this->response['error'] = true;
-                $this->response['message'] = 'Product Varient not available.';
-                $this->response['data'] = array();
-                print_r(json_encode($this->response));
-                return false;
-            }
-
-            // clear cart if user has multi restro items
-            $clear_cart = (isset($_POST['clear_cart']) && $_POST['clear_cart'] != "") ? $this->input->post('clear_cart', true) : 0;
-            if ($clear_cart == true) {
-                if (!$this->cart_model->remove_from_cart(['user_id' => $user_id])) {
-                    $this->response['error'] = true;
-                    $this->response['message'] = 'Not able to remove existing seller items please try agian later.';
-                    $this->response['data'] = array();
-                    print_r(json_encode($this->response));
-                    return false;
-                }
-            }
-
-            if ($settings['is_single_seller_order'] == 1) {
-                if (!is_single_seller($product_variant_id, $user_id)) {
-                    $this->response['error'] = true;
-                    $this->response['message'] = 'Only single seller items are allow in cart.You can remove privious item(s) and add this item.';
-                    $this->response['data'] = array();
-                    print_r(json_encode($this->response));
-                    return false;
-                }
-            }
-
-            // print_r($settings);
-
             $qty = $this->input->post('qty', true);
             $saved_for_later = (isset($_POST['is_saved_for_later']) && $_POST['is_saved_for_later'] != "") ? $this->input->post('is_saved_for_later', true) : 0;
             $check_status = ($qty == 0 || $saved_for_later == 1) ? false : true;
+            $settings = get_settings('system_settings', true);
             $cart_count = get_cart_count($_POST['user_id']);
             $is_variant_available_in_cart = is_variant_available_in_cart($_POST['product_variant_id'], $_POST['user_id']);
             if (!$is_variant_available_in_cart) {
@@ -1469,6 +1329,7 @@ Defined Methods:-
                     return;
                 }
             }
+
             if (!$this->cart_model->add_to_cart($_POST, $check_status)) {
                 $response = get_cart_total($_POST['user_id'], false);
                 $cart_user_data = $this->cart_model->get_user_cart($_POST['user_id'], 0);
@@ -1522,7 +1383,6 @@ Defined Methods:-
             }
         }
     }
-
 
     //11.login
 
@@ -2430,7 +2290,6 @@ Defined Methods:-
             $q = $this->db->join('products p', 'p.id=f.product_id')
                 ->join('product_variants pv', 'pv.product_id=p.id')
                 ->where('f.user_id', $_POST['user_id'])
-                ->where('p.status', 1)
                 ->select('(select count(id) from favorites where user_id=' . $_POST['user_id'] . ') as total, ,f.*')
                 ->group_by('f.product_id')
                 ->limit($limit, $offset)
@@ -2989,7 +2848,7 @@ Defined Methods:-
                         $status = json_encode(array(array('received', date("d-m-Y h:i:sa"))));
                         update_details(['status' => $status], ['order_id' => $data['order_id']], 'order_items', false);
 
-                        // place order custome notification on payment success
+                         // place order custome notification on payment success
 
                         $custom_notification = fetch_details('custom_notifications', ['type' => "place_order"], '');
                         $hashtag_order_id = '< order_id >';
@@ -3002,7 +2861,7 @@ Defined Methods:-
                         $hashtag = html_entity_decode($string);
                         $data2 = str_replace($hashtag_application_name, $system_settings['app_name'], $hashtag);
                         $message = output_escaping(trim($data2, '"'));
-
+            
                         $fcm_admin_subject = (!empty($custom_notification)) ? $title : 'New order placed ID #' . $order_id;
                         $fcm_admin_msg = (!empty($custom_notification)) ? $message : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
                         $user_fcm = fetch_details('users', ['id' => $data['user_id']], 'fcm_id');
@@ -3314,7 +3173,6 @@ Defined Methods:-
             $order_id = (!empty($event->data->object->metadata) && isset($event->data->object->metadata->order_id)) ? $event->data->object->metadata->order_id : 0;
         }
 
-        
         if (!is_numeric($order_id) && strpos($order_id, "wallet-refill-user") !== false) {
             $temp = explode("-", $order_id);
             if (isset($temp[3]) && is_numeric($temp[3]) && !empty($temp[3] && $temp[3] != '')) {
@@ -3423,7 +3281,7 @@ Defined Methods:-
                             $hashtag = html_entity_decode($string);
                             $data2 = str_replace($hashtag_application_name, $system_settings['app_name'], $hashtag);
                             $message = output_escaping(trim($data2, '"'));
-
+                
                             $fcm_admin_subject = (!empty($custom_notification)) ? $title : 'New order placed ID #' . $order_id;
                             $fcm_admin_msg = (!empty($custom_notification)) ? $message : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
                             $user_fcm = fetch_details('users', ['id' => $user_id], 'fcm_id');
@@ -3829,7 +3687,7 @@ Defined Methods:-
 
         $this->form_validation->set_rules('amount', 'Amount', 'trim|required|numeric|xss_clean');
         $this->form_validation->set_rules('user_id', 'User ID', 'trim|required|numeric|xss_clean');
-        $this->form_validation->set_rules('order_id', 'Order ID', 'trim|xss_clean');
+        $this->form_validation->set_rules('order_id', 'Order ID', 'trim|numeric|xss_clean');
         $this->form_validation->set_rules('reference', 'Reference', 'trim|xss_clean');
         if (!$this->form_validation->run()) {
             $this->response['error'] = true;
@@ -3837,7 +3695,7 @@ Defined Methods:-
             print_r(json_encode($this->response));
             return false;
         } else {
-            $this->load->library('Flutterwave');
+            $this->load->library('flutterwave');
 
             $app_settings = get_settings('system_settings', true);
             $payment_settings = get_settings('payment_method', true);
@@ -3866,7 +3724,6 @@ Defined Methods:-
             $data['customizations']['title'] = $app_settings['app_name'] . " Payments ";
             $data['customizations']['description'] = "Online payments on " . $app_settings['app_name'];
             $data['customizations']['logo'] = (!empty($logo)) ? $logo : "";
-            
             $payment = $this->flutterwave->create_payment($data);
             if (!empty($payment)) {
                 $payment = json_decode($payment, true);
@@ -3960,7 +3817,8 @@ Defined Methods:-
         } else {
             $order_id = $_POST['order_id'];
             $order = fetch_orders($order_id, false, false, false, false, false, false, false);
-            if ($order['order_data'][0]['order_items'][0]['status'][0][0] == 'awaiting') {
+            if($order['order_data'][0]['order_items'][0]['status'][0][0] == 'awaiting')
+            {
                 update_stock($order['order_data'][0]['order_items'][0]['product_variant_id'], $order['order_data'][0]['order_items'][0]['quantity'], 'plus');
             }
             delete_details(['id' => $order_id], 'orders');
@@ -4939,7 +4797,7 @@ Defined Methods:-
     public function paystack_webhook()
     {
         $this->load->library(['paystack']);
-
+      
         $system_settings = get_settings('system_settings', true);
         $credentials = $this->paystack->get_credentials();
 
@@ -4949,10 +4807,10 @@ Defined Methods:-
         $event = json_decode($request_body, true);
         log_message('error', 'paystack Webhook --> ' . var_export($event, true));
         log_message('error', 'paystack Webhook SERVER Variable --> ' . var_export($_SERVER, true));
-
+       
 
         if (!empty($event['data'])) {
-
+            
             $txn_id = (isset($event['data']['reference'])) ? $event['data']['reference'] : "";
             if (isset($txn_id) && !empty($txn_id)) {
                 $transaction = fetch_details('transactions', ['txn_id' => $txn_id],  '*');
@@ -4960,7 +4818,7 @@ Defined Methods:-
                     $order_id = $transaction[0]['order_id'];
                     $user_id = $transaction[0]['user_id'];
                 } else {
-                    // $order_id = 0;
+                   // $order_id = 0;
                     $order_id = $event['data']['metadata']['order_id'];
                     $order_data = fetch_orders($order_id);
                     $user_id = $order_data['order_data'][0]['user_id'];
@@ -4976,7 +4834,7 @@ Defined Methods:-
 
         /* Wallet refill has unique format for order ID - wallet-refill-user-{user_id}-{system_time}-{3 random_number}  */
         if (!is_numeric($order_id) && strpos($order_id, "wallet-refill-user") !== false) {
-
+            
             $temp = explode("-", $order_id);
             if (isset($temp[3]) && is_numeric($temp[3]) && !empty($temp[3] && $temp[3] != '')) {
                 $user_id = $temp[3];
@@ -4994,9 +4852,9 @@ Defined Methods:-
 
         if ($event['event'] == 'charge.success') {
             if (!empty($order_id)) {     /* To do the wallet recharge if the order id is set in the pattern */
-
+                
                 if (strpos($order_id, "wallet-refill-user") !== false) {
-
+                    
                     $data['transaction_type'] = "wallet";
                     $data['user_id'] = $user_id;
                     $data['order_id'] = $order_id;
@@ -5065,29 +4923,31 @@ Defined Methods:-
                         if (!empty($transaction)) {
                             $transaction_id = $transaction[0]['id'];
                             update_details(['status' => 'success'], ['id' => $transaction_id], 'transactions');
-                        } else {
-                            /* add transaction of the payment */
-                            $amount = ($event['data']['amount']);
-                            $data = [
-                                'transaction_type' => 'transaction',
-                                'user_id' => $user_id,
-                                'order_id' => $order_id,
-                                'type' => 'paystack',
-                                'txn_id' => $txn_id,
-                                'amount' => $amount,
-                                'status' => 'success',
-                                'message' => 'order placed successfully',
-                            ];
-                            $this->transaction_model->add_transaction($data);
                         }
-
-
-
+                        else
+                        {
+                             /* add transaction of the payment */
+                             $amount = ($event['data']['amount']);
+                             $data = [
+                                 'transaction_type' => 'transaction',
+                                 'user_id' => $user_id,
+                                 'order_id' => $order_id,
+                                 'type' => 'paystack',
+                                 'txn_id' => $txn_id,
+                                 'amount' => $amount,
+                                 'status' => 'success',
+                                 'message' => 'order placed successfully',
+                             ];
+                             $this->transaction_model->add_transaction($data);
+                        }
+                      
+                        
+                        
                         $status = json_encode(array(array('received', date("d-m-Y h:i:sa"))));
                         update_details(['status' => $status], ['order_id' => $order_id], 'order_items', false);
                         update_details(['active_status' => 'received'], ['order_id' => $order_id], 'order_items');
-
-                        // place order custome notification on payment success
+                      
+                         // place order custome notification on payment success
 
                         $custom_notification = fetch_details('custom_notifications', ['type' => "place_order"], '');
                         $hashtag_order_id = '< order_id >';
@@ -5100,7 +4960,7 @@ Defined Methods:-
                         $hashtag = html_entity_decode($string);
                         $data2 = str_replace($hashtag_application_name, $system_settings['app_name'], $hashtag);
                         $message = output_escaping(trim($data2, '"'));
-
+            
                         $fcm_admin_subject = (!empty($custom_notification)) ? $title : 'New order placed ID #' . $order_id;
                         $fcm_admin_msg = (!empty($custom_notification)) ? $message : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
                         $user_fcm = fetch_details('users', ['id' => $user_id], 'fcm_id');
@@ -5174,7 +5034,7 @@ Defined Methods:-
 
     public function flutterwave_webhook()
     {
-        $this->load->library(['Flutterwave']);
+        $this->load->library(['flutterwave']);
         $system_settings = get_settings('system_settings', true);
         $credentials = $this->flutterwave->get_credentials();
 
@@ -5186,7 +5046,7 @@ Defined Methods:-
 
         log_message('error', 'Flutterwave Webhook --> ' . var_export($event, true));
         log_message('error', 'Flutterwave Webhook SERVER Variable --> ' . var_export($_SERVER, true));
-
+    
         if (!empty($event->data->id)) {
             $txn_id = (isset($event->data->id)) ? $event->data->id : "";
             if (!empty($txn_id)) {
@@ -5210,13 +5070,7 @@ Defined Methods:-
 
         /* Wallet refill has unique format for order ID - wallet-refill-user-{user_id}-{system_time}-{3 random_number}  */
         if (empty($order_id)) {
-            $user_email= (!empty($event->data->customer->email) && isset($event->data->customer->email)) ? $event->data->customer->email : 0;
-            $user_id = fetch_details('users',['email' => $user_email],'id');
-            $user_main_id = $user_id[0]['id'];
-            $currTime = date('Y-m-d H:i:s');
-            $order_id = 'wallet-refill-user-'.$user_main_id.'-'.$currTime.'-'. rand(10,1000);
-            log_message('error', 'user id --> ' . var_export($order_id, true));
-
+            $order_id = (!empty($event->data->orderRef) && isset($event->data->orderRef)) ? $event->data->orderRef : 0;
         }
 
         if (!is_numeric($order_id) && strpos($order_id, "wallet-refill-user") !== false) {
@@ -5240,7 +5094,7 @@ Defined Methods:-
 
         if ($event->event == 'charge.completed' && $event->data->status == 'successful') {
             if (!empty($order_id)) {
-                /* To do the wallet recharge if the order id is set in the pattern */
+                /* To do the wallet recharge if the order id is set in the patter */
                 if (strpos($order_id, "wallet-refill-user") !== false) {
                     $data['transaction_type'] = "wallet";
                     $data['user_id'] = $user_id;
@@ -5251,7 +5105,6 @@ Defined Methods:-
                     $data['status'] = "success";
                     $data['message'] = "Wallet refill successful";
                     $this->transaction_model->add_transaction($data);
-                    log_message('error', ' transaction data --> ' . var_export($data, true));
 
                     $this->load->model('customer_model');
                     if ($this->customer_model->update_balance($amount, $user_id, 'add')) {
@@ -5312,9 +5165,9 @@ Defined Methods:-
                         update_details(['active_status' => 'received'], ['order_id' => $order_id], 'order_items');
 
                         $status = json_encode(array(array('received', date("d-m-Y h:i:sa"))));
-                        update_details(['status' => $status], ['order_id' => $order_id], 'order_items', false);
+                        update_details(['status' => $status], ['order_id' => $order_id  ], 'order_items', false);
 
-                        // place order custome notification on payment success
+                         // place order custome notification on payment success
 
                         $custom_notification = fetch_details('custom_notifications', ['type' => "place_order"], '');
                         $hashtag_order_id = '< order_id >';
@@ -5327,7 +5180,7 @@ Defined Methods:-
                         $hashtag = html_entity_decode($string);
                         $data2 = str_replace($hashtag_application_name, $system_settings['app_name'], $hashtag);
                         $message = output_escaping(trim($data2, '"'));
-
+            
                         $fcm_admin_subject = (!empty($custom_notification)) ? $title : 'New order placed ID #' . $order_id;
                         $fcm_admin_msg = (!empty($custom_notification)) ? $message : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
                         $user_fcm = fetch_details('users', ['id' => $user_id], 'fcm_id');
@@ -5349,13 +5202,13 @@ Defined Methods:-
             } else {
                 /* No order ID found */
                 log_message('error', 'Flutterwave Webhook | No Order ID found --> ' . var_export($event, true));
-                return $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(304)
-                    ->set_output(json_encode(array(
-                        'message' => '304 Not Modified - order/transaction id not found',
-                        'error' => true
-                    )));
+                    return $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(304)
+                        ->set_output(json_encode(array(
+                            'message' => '304 Not Modified - order/transaction id not found',
+                            'error' => true
+                        )));
             }
 
             $response['error'] = false;
@@ -5479,338 +5332,4 @@ Defined Methods:-
         print_r(json_encode($this->response));
         return false;
     }
-
-    public function create_midtrans_transaction()
-    {
-        if (!$this->verify_token()) {
-            return false;
-        }
-        $this->form_validation->set_rules('order_id', 'Order id', 'trim|required|xss_clean');
-        $this->form_validation->set_rules('amount', 'Amount', 'trim|required|xss_clean');
-        $order_id = $_POST['order_id'];
-        $amount = $_POST['amount'];
-        if (!$this->form_validation->run()) {
-            $this->response['error'] = true;
-            $this->response['message'] = strip_tags(validation_errors());
-            $this->response['data'] = array();
-        } else {
-            $this->load->library(['midtrans']);
-            $transaction = $this->midtrans->create_transaction($order_id, $amount);
-            if (!empty($transaction)) {
-                $this->response['error'] = false;
-                $this->response['message'] = "Token generate successfully";
-                $this->response['data'] = json_decode($transaction['body'], 1);
-            } else {
-                $this->response['error'] = true;
-                $this->response['message'] = "Token generation Failed";
-                $this->response['data'] = array();
-            }
-        }
-        print_r(json_encode($this->response));
-    }
-    public function get_midtrans_transaction_status()
-    {
-
-        if (!$this->verify_token()) {
-            return false;
-        }
-        $this->form_validation->set_rules('order_id', 'Order id', 'trim|required|xss_clean');
-        $order_id = $this->input->post('order_id', true);
-        
-        if (!$this->form_validation->run()) {
-            $this->response['error'] = true;
-            $this->response['message'] = strip_tags(validation_errors());
-            $this->response['data'] = array();
-        } else {
-
-            $this->load->library(['midtrans']);
-            $create_order = $this->midtrans->get_transaction_status($order_id);
-            if (!empty($create_order)) {
-                $this->response['error'] = false;
-                $this->response['message'] = "Transaction Retrived Successfully";
-                $this->response['data'] = $create_order;
-            } else {
-                $this->response['error'] = true;
-                $this->response['message'] = "Transaction Not Retrived";
-                $this->response['data'] = array();
-            }
-        }
-        print_r(json_encode($this->response));
-    }
-
-    public function midtrans_payment_process()
-    {
-        
-        $midtransInfo = $this->input->get();
-
-        if (!empty($midtransInfo) && isset($_GET['status_code']) && ($_GET['status_code']) == 200 && isset($_GET['transaction_status']) && strtolower($_GET['transaction_status']) == 'capture') {
-            $response['error'] = false;
-            $response['message'] = "Success, Credit card transaction is successful";
-            $response['data'] = $midtransInfo;
-        } elseif (!empty($midtransInfo) && isset($_GET['transaction_status']) && strtolower($_GET['transaction_status']) == "pending") {
-            $response['error'] = false;
-            $response['message'] = "Waiting customer to finish transaction order_id: " . $_GET['order_id'];
-            $response['data'] = $midtransInfo;
-        } elseif (!empty($midtransInfo) && isset($_GET['transaction_status']) && strtolower($_GET['transaction_status']) == "deny") {
-            $response['error'] = false;
-            $response['message'] = "Your payment of order_id: " . $_GET['order_id'] . " is denied";
-            $response['data'] = $midtransInfo;
-        } else {
-            $response['error'] = true;
-            $response['message'] = "Payment Cancelled / Declined ";
-            $response['data'] = (isset($_GET)) ? $this->input->get() : "";
-        }
-        print_r(json_encode($response));
-    }
-
-    public function midtrans_webhook()
-    {
-        $system_settings = get_settings('system_settings', true);
-        $this->form_validation->set_rules('order_id', 'Order id', 'trim|required|xss_clean');
-        $order_id = $this->input->post('order_id', true);
-
-        if (!$this->form_validation->run()) {
-            $this->response['error'] = true;
-            $this->response['message'] = strip_tags(validation_errors());
-            $this->response['data'] = array();
-            print_r(json_encode($this->response));
-        } else {
-            $this->load->library(['midtrans']);
-            $transaction_response = $this->midtrans->get_transaction_status($order_id);
-            $txn_order_id = ($transaction_response['order_id']) ? $transaction_response['order_id'] : "";
-            if (!empty($txn_order_id)) {
-                $transaction = fetch_details('transactions', ['order_id' => $txn_order_id], '*');
-                if (isset($transaction) && !empty($transaction)) {
-                    $order_id = $transaction[0]['order_id'];
-                    $user_id = $transaction[0]['user_id'];
-                } else {
-                    $order_id = $transaction_response['order_id'];
-                    $order_data = fetch_orders($order_id);
-                    $user_id = $order_data['order_data'][0]['user_id'];
-                }
-            }
-
-  
-
-            if ($order_id != $transaction_response['order_id']) {
-                $response['error'] = true;
-                $response['message'] = "Order id is not matched with transaction order id.";
-                echo json_encode($response);
-                return false;
-            }
-            $res = fetch_details('orders', ['id' => $order_id], 'id');
-           
-            if (!empty($res) && isset($res[0]['id']) && is_numeric($res[0]['id'])) {
-                $db_order_id = $res[0]['id'];
-                if ($transaction_response['order_id'] != $db_order_id) {
-                    $response['error'] = true;
-                    $response['message'] = "Order id is not matched with orders.";
-                    echo json_encode($response);
-                    return false;
-                } else {
-                    $item_id = fetch_details('order_items', ['order_id' => $order_id], 'id');
-                    $order_item_ids = array_column($item_id, "id");
-                }
-            }
-            $type = $transaction_response['payment_type'];
-            $gross_amount = $transaction_response['gross_amount'];
-            if ($transaction_response['transaction_status'] == 'capture') {
-
-                if ($transaction_response['fraud_status'] == 'challenge') {
-                    $response['error'] = false;
-                    $response['transaction_status'] = $transaction_response['fraud_status'];
-                    $response['message'] = "Transaction order_id: " . $order_id . " is challenged by FDS";
-                    log_message('error', "Transaction order_id: " . $order_id . " is challenged by FDS",);
-                    return false;
-                } else {
-                    if (strpos($order_id, "wallet-refill-user") !== false) {
-                        
-                        if (!is_numeric($order_id) && strpos($order_id, "wallet-refill-user") !== false) {
-                            $temp = explode("-", $order_id);
-                            if (isset($temp[3]) && is_numeric($temp[3]) && !empty($temp[3] && $temp[3] != '')) {
-                                $user_id = $temp[3];
-                            } else {
-                                $user_id = 0;
-                            }
-                        }
-                        $data['transaction_type'] = "wallet";
-                        $data['user_id'] = $user_id;
-                        $data['order_id'] = $order_id;
-                        $data['type'] = "credit";
-                        $data['txn_id'] = '';
-                        $data['amount'] = $gross_amount;
-                        $data['status'] = "success";
-                        $data['message'] = "Wallet refill successful";
-                        log_message('error', 'Midtrans user ID -  transaction data--> ' . var_export($data, true));
-                        $this->transaction_model->add_transaction($data);
-                        log_message('error', 'Midtrans user ID - Add transaction ');
-
-                        $this->load->model('customer_model');
-                        if ($this->customer_model->update_balance($gross_amount, $user_id, 'add')) {
-                            $response['error'] = false;
-                            $response['transaction_status'] = $transaction_response['transaction_status'];
-                            $response['message'] = "Wallet recharged successfully!";
-                            log_message('error', 'Midtrans user ID - Wallet recharged successfully --> ' . var_export($order_id, true));
-                        } else {
-                            $response['error'] = true;
-                            $response['transaction_status'] = $transaction_response['transaction_status'];
-                            $response['message'] = "Wallet could not be recharged!";
-                            log_message('error', 'Midtrans Webhook | wallet recharge failure --> ' . var_export($transaction_response['transaction_status'], true));
-                        }
-                        echo json_encode($response);
-                        return false;
-                    } else {
-
-                        //update order and mark it as receive
-                        $order = fetch_orders($order_id, false, false, false, false, false, false, false);
-                        if (isset($order['order_data'][0]['user_id'])) {
-                            $user = fetch_details('users', ['id' => $order['order_data'][0]['user_id']]);
-                           
-                            $overall_total = array(
-                                'total_amount' => $order['order_data'][0]['total'],
-                                'delivery_charge' => $order['order_data'][0]['delivery_charge'],
-                                'tax_amount' => $order['order_data'][0]['total_tax_amount'],
-                                'tax_percentage' => $order['order_data'][0]['total_tax_percent'],
-                                'discount' =>  $order['order_data'][0]['promo_discount'],
-                                'wallet' =>  $order['order_data'][0]['wallet_balance'],
-                                'final_total' =>  $order['order_data'][0]['final_total'],
-                                'otp' => $order['order_data'][0]['otp'],
-                                'address' =>  $order['order_data'][0]['address'],
-                                'payment_method' => $order['order_data'][0]['payment_method']
-                            );
-                            $overall_order_data = array(
-                                'cart_data' => $order['order_data'][0]['order_items'],
-                                'order_data' => $overall_total,
-                                'subject' => 'Order received successfully',
-                                'user_data' => $user[0],
-                                'system_settings' => $system_settings,
-                                'user_msg' => 'Hello, Dear ' . ucfirst($user[0]['username']) . ', We have received your order successfully. Your order summaries are as followed',
-                                'otp_msg' => 'Here is your OTP. Please, give it to delivery boy only while getting your order.',
-                            );
-                            
-                            if (isset($user[0]['email']) && !empty($user[0]['email'])) {
-                                send_mail($user[0]['email'], 'Order received successfully', $this->load->view('admin/pages/view/email-template.php', $overall_order_data, TRUE));
-                            }
-
-                            /* No need to add because the transaction is already added just update the transaction status */
-                            if (!empty($transaction)) {
-                                
-                                $transaction_id = $transaction[0]['id'];
-                                update_details(['status' => 'success'], ['id' => $transaction_id], 'transactions');
-                            } else {
-                                
-                                /* add transaction of the payment */
-                                $amount = ($transaction_response['gross_amount']);
-                                $data = [
-                                    'transaction_type' => 'transaction',
-                                    'user_id' => $user_id,
-                                    'order_id' => $order_id,
-                                    'type' => 'midtrans',
-                                    'txn_id' => '',
-                                    'amount' => $amount,
-                                    'status' => 'success',
-                                    'message' => 'order placed successfully',
-                                ];
-                                $this->transaction_model->add_transaction($data);
-                            }
-                            update_details(['active_status' => 'received'], ['order_id' => $order_id], 'order_items');
-
-                            $status = json_encode(array(array('received', date("d-m-Y h:i:sa"))));
-                            update_details(['status' => $status], ['order_id' => $order_id], 'order_items', false);
-                            // place order custome notification on payment success
-                            $custom_notification = fetch_details('custom_notifications', ['type' => "place_order"], '');
-                            $hashtag_order_id = '< order_id >';
-                            $string = json_encode($custom_notification[0]['title'], JSON_UNESCAPED_UNICODE);
-                            $hashtag = html_entity_decode($string);
-                            $data1 = str_replace($hashtag_order_id, $order_id, $hashtag);
-                            $title = output_escaping(trim($data1, '"'));
-                            $hashtag_application_name = '< application_name >';
-                            $string = json_encode($custom_notification[0]['message'], JSON_UNESCAPED_UNICODE);
-                            $hashtag = html_entity_decode($string);
-                            $data2 = str_replace($hashtag_application_name, $system_settings['app_name'], $hashtag);
-                            $message = output_escaping(trim($data2, '"'));
-
-                            $fcm_admin_subject = (!empty($custom_notification)) ? $title : 'New order placed ID #' . $order_id;
-                            $fcm_admin_msg = (!empty($custom_notification)) ? $message : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
-                            $user_fcm = fetch_details('users', ['id' => $user_id], 'fcm_id');
-                            $user_fcm_id[0][] = $user_fcm[0]['fcm_id'];
-                            if (!empty($user_fcm_id)) {
-                                $fcmMsg = array(
-                                    'title' => $fcm_admin_subject,
-                                    'body' => $fcm_admin_msg,
-                                    'type' => "place_order",
-                                    'content_available' => true
-                                );
-                                send_notification($fcmMsg, $user_fcm_id);
-                            }
-                        } else {
-                            log_message('error', 'Order id not found');
-                            /* No order ID found */
-                        }
-                        $response['error'] = false;
-                        $response['transaction_status'] = $transaction_response['transaction_status'];
-                        $response['message'] = "Transaction successfully done using " . $type;
-                        log_message('error', "Transaction successfully done using: " . $type);
-                        echo json_encode($response);
-                        return false;
-                    }
-                }
-            } else if ($transaction_response['transaction_status'] == 'pending') {
-                $response['error'] = false;
-                $response['transaction_status'] = $transaction_response['transaction_status'];
-                $response['message'] = "Waiting customer to finish transaction order_id: " . $order_id . " using " . $type;
-                log_message('error', "Waiting customer to finish transaction order_id: " . $order_id . " using " . $type);
-                echo json_encode($response);
-                return false;
-            } else if ($transaction_response['transaction_status'] == 'deny') {
-
-                $response['error'] = true;
-                $response['transaction_status'] = $transaction_response['transaction_status'];
-                $response['message'] = "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied. And" . $transaction_response['status_message'];
-                log_message('error', "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied. And" . $transaction_response['status_message']);
-                echo json_encode($response);
-                return false;
-            } else if ($transaction_response['transaction_status'] == 'expire') {
-                $response['error'] = true;
-                $response['transaction_status'] = $transaction_response['transaction_status'];
-                $response['message'] = "Payment using " . $type . " for transaction order_id: " . $order_id . " is expired.";
-                log_message('error', "Payment using " . $type . " for transaction order_id: " . $order_id . " is expired.");
-                echo json_encode($response);
-                return false;
-            } else if ($transaction_response['transaction_status'] == 'cancel') {
-                $response['error'] = true;
-                $response['transaction_status'] = $transaction_response['transaction_status'];
-                $response['message'] = "Payment using " . $type . " for transaction order_id: " . $order_id . " is canceled.";
-                log_message('error', "Payment using " . $type . " for transaction order_id: " . $order_id . " is canceled.");
-                echo json_encode($response);
-                return false;
-            }
-        }
-    }
-
-    public function clear_cart()
-    {
-
-        if (!$this->verify_token()) {
-            return false;
-        }
-        $this->form_validation->set_rules('user_id', 'User', 'trim|numeric|required|xss_clean');
-        if (!$this->form_validation->run()) {
-            $this->response['error'] = true;
-            $this->response['message'] = strip_tags(validation_errors());
-            $this->response['data'] = array();
-            print_r(json_encode($this->response));
-            return;
-        } else {
-            delete_details(['user_id' => $_POST['user_id']], 'cart');
-            $this->response['error'] = false;
-            $this->response['message'] = 'Data deleted successfully';
-            print_r(json_encode($this->response));
-            return;
-        }
-    }
-
-
-
-
 }

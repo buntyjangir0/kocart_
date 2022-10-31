@@ -49,7 +49,6 @@ class Product extends CI_Controller
             $this->data['meta_description'] = 'Add Product | ' . $settings['app_name'];
             $this->data['taxes'] = fetch_details('taxes', null, '*');
             $this->data['countries'] = fetch_details('countries', null, 'name,id');
-            $this->data['brands'] = fetch_details('brands', null, 'name,id');
             $this->data['sellers'] = $this->db->select(' u.username as seller_name,u.id as seller_id,sd.category_ids,sd.id as seller_data_id  ')
                 ->join('users_groups ug', ' ug.user_id = u.id ')
                 ->join('seller_data sd', ' sd.user_id = u.id ')
@@ -104,6 +103,7 @@ class Product extends CI_Controller
             redirect('admin/login', 'refresh');
         }
     }
+
 
     public function product_order()
     {
@@ -225,7 +225,7 @@ class Product extends CI_Controller
             }
 
             $product_data = json_encode($this->db->order_by('row_order')->join('categories c', 'p.category_id = c.id')->get('products p')->result_array());
-            
+            print_r($product_data);
         } else {
             redirect('admin/login', 'refresh');
         }
@@ -274,7 +274,6 @@ class Product extends CI_Controller
             $this->form_validation->set_rules('pro_input_tax', 'Tax', 'trim|xss_clean');
             $this->form_validation->set_rules('pro_input_image', 'Image', 'trim|required|xss_clean', array('required' => 'Image is required'));
             $this->form_validation->set_rules('made_in', 'Made In', 'trim|xss_clean');
-            $this->form_validation->set_rules('brand', 'Brand', 'trim|xss_clean');
             $this->form_validation->set_rules('product_type', 'Product type', 'trim|required|xss_clean');
             $this->form_validation->set_rules('seller_id', 'Seller', 'trim|required|xss_clean');
             $this->form_validation->set_rules('total_allowed_quantity', 'Total Allowed Quantity', 'trim|xss_clean');
@@ -419,13 +418,6 @@ class Product extends CI_Controller
         echo json_encode($response);
     }
 
-    public function get_brands_data()
-    {
-        $search = $this->input->get('search');
-        $response = $this->product_model->get_brands($search);
-        echo json_encode($response);
-    }
-
     public function get_product_data_list()
     {
 
@@ -490,7 +482,7 @@ class Product extends CI_Controller
                 $settings = get_settings('system_settings', true);
                 $this->data['title'] = 'View Product | ' . $settings['app_name'];
                 $this->data['meta_description'] = 'View Product | ' . $settings['app_name'];
-                $res = fetch_product($user_id = NULL, ["show_only_active_products" => 0], $this->input->get('edit_id', true));
+                $res = fetch_product($user_id = NULL, ["show_only_active_products" => 0] , $this->input->get('edit_id', true));
                 $this->data['product_details'] = $res['product'];
                 $this->data['product_attributes'] = get_attribute_values_by_pid($_GET['edit_id']);
                 $this->data['product_variants'] = get_variants_values_by_pid($_GET['edit_id'], [0, 1, 7]);

@@ -134,3 +134,6 @@ define('ALL', '1');
 define('INCLUDED', '2');
 define('EXCLUDED', '3');
 defined("WORD_LIMIT") || define("WORD_LIMIT", 25);
+
+define('ACI_USER', 'eresitrade');
+define('ACI_KEY', 'LJt3r5vzkqBX8uIVROwvDoADLcwNWBqU');

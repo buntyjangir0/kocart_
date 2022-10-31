@@ -89,18 +89,6 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="brand" class="col-form-label">Brand</label>
-                                                <select class=" col-md-12  form-control brand_list" id="brand_list" name="brand">
-                                                    <?php
-                                                    if (isset($product_details[0]['brand']) && $product_details[0]['brand'] != '') {
-                                                    ?>
-                                                        <option value="<?= $product_details[0]['brand'] ?>" <?= (isset($product_details[0]['brand']) &&  $product_details[0]['brand'] == $brands[0]['name']) ? 'selected' : ''; ?>><?= $product_details[0]['brand'] ?></option>
-                                                    <?php } ?>
-
-                                                    <!-- brands display here  -->
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
                                                 <label for="total_allowed_quantity" class="col-form-label">Total Allowed Quantity</label>
                                                 <input type="number" class="col-md-12 form-control" name="total_allowed_quantity" value="<?= (isset($product_details[0]['total_allowed_quantity'])) ? $product_details[0]['total_allowed_quantity'] : ''; ?>" placeholder='Total Allowed Quantity'>
                                             </div>

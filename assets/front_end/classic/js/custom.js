@@ -3514,14 +3514,14 @@ function usercartTotal() {
     $("#final_total").text(cartTotal.toFixed(2));
 }
 
-// var viewportWidth = $(window).width(); // original width 
+var viewportWidth = $(window).width(); // original width 
 
-// const refresh_window_html = '<div class="refresh-page"><h2 class="text-white text-center">Please refresh the page...<br> Since, the page has been resized </h2></div>';
-// $(window).on('resize', function () {
-//     if ($(".refresh-page").length == 0 && (viewportWidth != $(this).width())) {
-//         $("body").prepend(refresh_window_html);
-//     }
-// });
+const refresh_window_html = '<div class="refresh-page"><h2 class="text-white text-center">Please refresh the page...<br> Since, the page has been resized </h2></div>';
+$(window).on('resize', function () {
+    if ($(".refresh-page").length == 0 && (viewportWidth != $(this).width())) {
+        $("body").prepend(refresh_window_html);
+    }
+});
 
 window.editAddress = {
     'click .edit-address': function (e, value, row, index) {

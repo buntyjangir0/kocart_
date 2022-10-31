@@ -195,12 +195,6 @@ class Setting_model extends CI_Model
         $payment_data['paytm_website'] = isset($post['paytm_payment_mode']) && $post['paytm_payment_mode'] == 'production' ? $post['paytm_website'] : 'WEBSTAGING';
         $payment_data['paytm_industry_type_id'] = isset($post['paytm_payment_mode']) && $post['paytm_payment_mode'] == 'production' ? $post['paytm_industry_type_id'] : 'Retail';
 
-        $payment_data['midtrans_payment_mode'] = isset($post['midtrans_payment_mode']) && !empty($post['midtrans_payment_mode']) ? $post['midtrans_payment_mode'] : '';
-        $payment_data['midtrans_payment_method'] = isset($post['midtrans_payment_method']) ? '1' : '0';
-        $payment_data['midtrans_client_key'] = isset($post['midtrans_client_key']) && !empty($post['midtrans_client_key']) ? $post['midtrans_client_key'] : '';
-        $payment_data['midtrans_merchant_id'] = isset($post['midtrans_merchant_id']) && !empty($post['midtrans_merchant_id']) ? $post['midtrans_merchant_id'] : '';
-        $payment_data['midtrans_server_key'] = isset($post['midtrans_server_key']) && !empty($post['midtrans_server_key']) ? $post['midtrans_server_key'] : '';
-
         $payment_data['direct_bank_transfer'] = isset($post['direct_bank_transfer']) ? '1' : '0';
         $payment_data['account_name'] = isset($post['account_name']) && !empty($post['account_name']) ? $post['account_name'] : '';
         $payment_data['account_number'] = isset($post['account_number']) && !empty($post['account_number']) ? $post['account_number'] : '';
@@ -208,15 +202,6 @@ class Setting_model extends CI_Model
         $payment_data['bank_code'] = isset($post['bank_code']) && !empty($post['bank_code']) ? $post['bank_code'] : '';
         $payment_data['notes'] = isset($post['notes']) && !empty($post['notes']) ? $post['notes'] : '';
 
-        $payment_data['myfaoorah_payment_method'] = isset($post['myfaoorah_payment_method']) && !empty($post['myfaoorah_payment_method']) ? '1' : '0';
-        $payment_data['myfatoorah_token'] = isset($post['myfatoorah_token']) && !empty($post['myfatoorah_token']) ? $post['myfatoorah_token'] : '0';
-        $payment_data['myfatoorah_payment_mode'] = isset($post['myfatoorah_payment_mode']) && !empty($post['myfatoorah_payment_mode']) ? $post['myfatoorah_payment_mode'] : '';
-        $payment_data['myfatoorah__successUrl'] = isset($post['myfatoorah__successUrl']) && !empty($post['myfatoorah__successUrl']) ? $post['myfatoorah__successUrl'] : '';
-        $payment_data['myfatoorah__errorUrl'] = isset($post['myfatoorah__errorUrl']) && !empty($post['myfatoorah__errorUrl']) ? $post['myfatoorah__errorUrl'] : '';
-        $payment_data['myfatoorah_language'] = isset($post['myfatoorah_language']) && !empty($post['myfatoorah_language']) ? $post['myfatoorah_language'] : '';
-        $payment_data['myfatoorah_country'] = isset($post['myfatoorah_country']) && !empty($post['myfatoorah_country']) ? $post['myfatoorah_country'] : '';
-        $payment_data['myfatoorah__secret_key'] = isset($post['myfatoorah__secret_key']) && !empty($post['myfatoorah__secret_key']) ? $post['myfatoorah__secret_key'] : '';
-        
         $payment_data['cod_method'] = isset($post['cod_method']) ? '1' : '0';
 
         $payment_data = json_encode($payment_data);
@@ -239,6 +224,7 @@ class Setting_model extends CI_Model
     public function update_time_slot($post)
     {
         $post = escape_array($post);
+
         $time_slot_data = [
             'title' => $post['title'],
             'from_time' => $post['from_time'],

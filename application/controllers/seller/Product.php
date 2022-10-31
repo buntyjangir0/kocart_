@@ -42,7 +42,6 @@ class Product extends CI_Controller
             $this->data['taxes'] = fetch_details('taxes', null,  '*');
             $this->data['seller_id'] = $seller_id;
             $this->data['countries'] = fetch_details('countries', null, 'name,id');
-            $this->data['brands'] = fetch_details('brands', null, 'name,id');
             $this->data['sellers'] = $this->db->select(' u.username as seller_name,u.id as seller_id,sd.category_ids,sd.id as seller_data_id  ')
                 ->join('users_groups ug', ' ug.user_id = u.id ')
                 ->join('seller_data sd', ' sd.user_id = u.id ')
@@ -163,7 +162,7 @@ class Product extends CI_Controller
             }
 
             $product_data = json_encode($this->db->order_by('row_order')->join('categories c', 'p.category_id = c.id')->get('products p')->result_array());
-       
+            print_r($product_data);
         } else {
             redirect('seller/login', 'refresh');
         }
@@ -206,7 +205,6 @@ class Product extends CI_Controller
             $this->form_validation->set_rules('pro_input_tax', 'Tax', 'trim|xss_clean');
             $this->form_validation->set_rules('pro_input_image', 'Image', 'trim|required|xss_clean', array('required' => 'Image is required'));
             $this->form_validation->set_rules('made_in', 'Made In', 'trim|xss_clean');
-            $this->form_validation->set_rules('brand', 'Brand', 'trim|xss_clean');
             $this->form_validation->set_rules('product_type', 'Product type', 'trim|required|xss_clean');
             $this->form_validation->set_rules('total_allowed_quantity', 'Total Allowed Quantity', 'trim|xss_clean');
             $this->form_validation->set_rules('minimum_order_quantity', 'Minimum Order Quantity', 'trim|xss_clean');
@@ -885,7 +883,7 @@ class Product extends CI_Controller
                 } else {
                     while (($row = fgetcsv($handle, 10000, ",")) != FALSE) //get row vales
                     {
-                       
+                        print_r($row);
                         if ($temp != 0) {
                             if (empty($row[0])) {
                                 $this->response['error'] = true;
@@ -1242,13 +1240,6 @@ class Product extends CI_Controller
     {
         $search = $this->input->get('search');
         $response = $this->product_model->get_countries($search);
-        echo json_encode($response);
-    }
-
-    public function get_brands_data()
-    {
-        $search = $this->input->get('search');
-        $response = $this->product_model->get_brands($search);
         echo json_encode($response);
     }
 
