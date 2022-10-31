@@ -117,32 +117,13 @@ class Attribute_model extends CI_Model
 
         $attr_data = [
             'name' => $data['name'],
-            'attribute_set_id' => $data['attribute_set'],
-            'status' => 1
+            'attribute_set_id' => $data['attribute_set']
         ];
+
         if (isset($data['edit_attribute'])) {
             $this->db->set($attr_data)->where('id', $data['edit_attribute'])->update('attributes');
         } else {
             $this->db->insert('attributes', $attr_data);
-        }
-
-        $attribute_id = $this->db->get_where('attributes', array('name' => $data['name']))->result_array();
-
-        for ($i = 0; $i < count($data['attribute_value']); $i++) {
-
-            $attr_val = [
-                'attribute_id' => $attribute_id[0]['id'],
-                'value' => $data['attribute_value'][$i],
-                'swatche_type' => $data['swatche_type'][$i],
-                'swatche_value' => $data['swatche_value'][$i],
-                'status' => '1',
-            ];
-
-            if (isset($data['edit_attribute_value'])) {
-                $this->db->set($attr_val)->where('id', $data['edit_attribute_value'])->update('attribute_values');
-            } else {
-                $this->db->insert('attribute_values', $attr_val);
-            }
         }
     }
 
@@ -176,7 +157,6 @@ class Attribute_model extends CI_Model
 
         $count_res = $this->db->select(' COUNT(attr.id) as `total` ')->join('attribute_set attr_set', 'attr.attribute_set_id=attr_set.id', 'left');
 
-
         if (isset($multipleWhere) && !empty($multipleWhere)) {
             $count_res->or_like($multipleWhere);
         }
@@ -191,7 +171,6 @@ class Attribute_model extends CI_Model
         }
 
         $search_res = $this->db->select(' attr.*,attr_set.name as attr_set_name ')->join('attribute_set attr_set', 'attr.attribute_set_id=attr_set.id', 'left');
-
         if (isset($multipleWhere) && !empty($multipleWhere)) {
             $search_res->or_like($multipleWhere);
         }

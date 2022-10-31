@@ -97,7 +97,7 @@ Defined Methods:-
                 print_r(json_encode($response));
                 return false;
             }
-            JWT::$leeway = 2000;
+            JWT::$leeway = 60;
             $flag = true; //For payload indication that it return some data or throws an expection.
             $error = true; //It will indicate that the payload had verified the signature and hash is valid or not.
             foreach ($api_keys as $row) {
@@ -430,7 +430,8 @@ Defined Methods:-
                             'body' => $customer_msg,
                             'type' => "order",
                         );
-                       
+                        print_r($fcmMsg);
+                        return false;
                         $fcm_ids[0][] = $user_res[0]['fcm_id'];
                         send_notification($fcmMsg, $fcm_ids);
                     }
@@ -906,11 +907,9 @@ Defined Methods:-
             type : payment_method // { default : all  } optional            
             user_id:  15 { optional }
         */
-        //  if (!$this->verify_token()) {
-        //     return false;
-        // }     
-     
-
+        if (!$this->verify_token()) {
+            return false;
+        }
         $type = (isset($_POST['type']) && $_POST['type'] == 'payment_method') ? 'payment_method' : 'all';
         $this->form_validation->set_rules('type', 'Setting Type', 'trim|xss_clean');
 

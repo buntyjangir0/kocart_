@@ -67,8 +67,6 @@ class Payment_settings extends CI_Controller
             }
 
             if (isset($_POST['paystack_payment_method'])) {
-
-
                 $this->form_validation->set_rules('paystack_key_id', 'Paystack Key Id', 'trim|required|xss_clean');
                 $this->form_validation->set_rules('paystack_secret_key', 'Paystack Secret Key', 'trim|required|xss_clean');
             }
@@ -94,32 +92,6 @@ class Payment_settings extends CI_Controller
                     $this->form_validation->set_rules('paytm_industry_type_id', 'Paytm Industry Type ID', 'trim|required|xss_clean');
                 }
             }
-            
-            
-            
-            if (isset($_POST['midtrans_payment_method'])) {
-                $this->form_validation->set_rules('midtrans_payment_mode', 'Midtrans Payment Mode', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('midtrans_client_key', 'Midtrans Client  Key', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('midtrans_merchant_id', 'Midtrans Merchant ID', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('midtrans_server_key', 'Midtrans Server Key', 'trim|required|xss_clean');
-            }
-
-
-
-// -----------------------myfatoorah payment method begin---------------------------
-            if (isset($_POST['myfaoorah_payment_method'])) {
-                $this->form_validation->set_rules('myfaoorah_payment_method', 'myFatoorah Payment  Mode', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('myfatoorah_token', 'Myfatoorah Token', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('myfatoorah_payment_mode', 'Myfatoorah Payment Mode ', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('myfatoorah_language', 'Myfatoorah Language', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('myfatoorah_country', 'Myfatoorah Country', 'trim|required|xss_clean');
-                $this->form_validation->set_rules('myfatoorah__secret_key', 'myfatoorah Secret Key', 'trim|required|xss_clean');
-               
-                
-
-            }
-// ------------------------myfatoorah payment method end-------------------------------
-
             if (isset($_POST['direct_bank_transfer'])) {
                 $this->form_validation->set_rules('account_name', 'Account Name', 'trim|required|xss_clean');
                 $this->form_validation->set_rules('account_number', 'Account Number', 'trim|required|xss_clean');

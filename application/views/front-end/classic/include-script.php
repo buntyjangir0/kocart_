@@ -1,12 +1,36 @@
 <!-- IziModal -->
-
-<script src="<?= THEME_ASSETS_URL . 'js/eshop-bundle-js.js' ?>"></script>
-
+<script src="<?= THEME_ASSETS_URL . 'js/iziModal.min.js' ?>"></script>
+<!-- Popper -->
+<script src="<?= THEME_ASSETS_URL . 'js/popper.min.js' ?>"></script>
+<!-- Bootstrap -->
+<script src="<?= THEME_ASSETS_URL . 'js/bootstrap.min.js' ?>"></script>
+<!-- Swiper JS -->
+<script src="<?= THEME_ASSETS_URL . 'js/swiper-bundle.min.js' ?>"></script>
+<!-- Select -->
+<script src="<?= THEME_ASSETS_URL . 'js/select2.full.min.js' ?>"></script>
+<!-- Bootstrap Tabs -->
+<script src="<?= THEME_ASSETS_URL . 'js/bootstrap-tabs-x.min.js' ?>"></script>
+<!-- ElevateZoom -->
+<script src="<?= THEME_ASSETS_URL . 'js/jquery.ez-plus.js' ?>"></script>
+<!-- Bootstrap Table -->
+<script src="<?= THEME_ASSETS_URL . 'js/bootstrap-table.min.js' ?>"></script>
+<!-- blockUI -->
+<script src="<?= THEME_ASSETS_URL . 'js/jquery.blockUI.js' ?>"></script>
+<!-- Sweeta Alert 2 -->
+<script src="<?= THEME_ASSETS_URL . 'js/sweetalert2.min.js' ?>"></script>
+<!-- Modernizr-custom.js -->
+<script src="<?= THEME_ASSETS_URL . 'js/modernizr-custom.js' ?>"></script>
+<!-- Lazy-Load.js -->
+<script src="<?= THEME_ASSETS_URL . 'js/lazyload.min.js' ?>"></script>
+<!-- intlTelInput -->
+<script src="<?= THEME_ASSETS_URL . 'js/intlTelInput.js' ?>"></script>
+<script src="<?= THEME_ASSETS_URL . 'js/lightbox.js' ?>"></script>
 <!-- Firebase.js -->
 <script src="<?= THEME_ASSETS_URL . 'js/firebase-app.js' ?>"></script>
 <script src="<?= THEME_ASSETS_URL . 'js/firebase-auth.js' ?>"></script>
 <script src="<?= base_url('firebase-config.js') ?>"></script>
 <!-- Custom -->
+<script src="<?= THEME_ASSETS_URL . 'js/custom.js' ?>"></script>
 <?php if ($this->session->flashdata('message')) { ?>
     <script>
         Toast.fire({
@@ -17,4 +41,4 @@
 <?php } ?>
 
 <!-- Dark mode -->
-<script src="<?= THEME_ASSETS_URL . 'js/darkmode-min.js' ?>"></script>
+<!--<script src="<?= THEME_ASSETS_URL . 'js/darkmode-min.js' ?>"></script> -->

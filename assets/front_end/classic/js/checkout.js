@@ -1,43 +1,7 @@
 "use strict";
 var stripe1;
-$(document).ready(function() {
+$(document).ready(function () {
     var addresses = [];
-
-    function midtrans_setup(midtrans_transaction_token) {
-
-        // Trigger snap popup. @TODO: Replace TRANSACTION_TOKEN_HERE with your transaction token
-        window.snap.pay(midtrans_transaction_token, {
-            onSuccess: function(result) {
-                /* You may add your own implementation here */
-                // alert("payment success!");
-                console.log(result);
-                place_order().done(function(result) {
-                    if (result.error == false) {
-                        setTimeout(function() {
-                            location.href = base_url + 'payment/success';
-                        }, 3000);
-                    }
-                });
-            },
-            onPending: function(result) {
-                /* You may add your own implementation here */
-                alert("wating your payment!");
-                console.log(result);
-            },
-            onError: function(result) {
-                /* You may add your own implementation here */
-                alert("payment failed!");
-                $('#place_order_btn').attr('disabled', false).html('Place Order');
-                console.log(result);
-            },
-            onClose: function() {
-                /* You may add your own implementation here */
-                $('#place_order_btn').attr('disabled', false).html('Place Order');
-                alert('you closed the popup without finishing the payment');
-            }
-        });
-    }
-
     function razorpay_setup(key, amount, app_name, logo, razorpay_order_id, username, user_email, user_contact) {
         var options = {
             "key": key, // Enter the Key ID generated from the Dashboard
@@ -47,12 +11,12 @@ $(document).ready(function() {
             "description": "Product Purchase",
             "image": logo,
             "order_id": razorpay_order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            "handler": function(response) {
+            "handler": function (response) {
                 $('#razorpay_payment_id').val(response.razorpay_payment_id);
                 $('#razorpay_signature').val(response.razorpay_signature);
-                place_order().done(function(result) {
+                place_order().done(function (result) {
                     if (result.error == false) {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             location.href = base_url + 'payment/success';
                         }, 3000);
                     }
@@ -71,7 +35,7 @@ $(document).ready(function() {
             },
             "escape": false,
             "modal": {
-                "ondismiss": function() {
+                "ondismiss": function () {
                     $('#place_order_btn').attr('disabled', false).html('Place Order');
                 }
             }
@@ -86,12 +50,12 @@ $(document).ready(function() {
             email: user_email,
             amount: (order_amount * 100),
             currency: "NGN",
-            callback: function(response) {
+            callback: function (response) {
                 $('#paystack_reference').val(response.reference);
                 if (response.status == "success") {
-                    place_order().done(function(result) {
+                    place_order().done(function (result) {
                         if (result.error == false) {
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 location.href = base_url + 'payment/success';
                             }, 3000);
                         }
@@ -100,14 +64,13 @@ $(document).ready(function() {
                     location.href = base_url + 'payment/cancel';
                 }
             },
-            onClose: function() {
+            onClose: function () {
                 $('#place_order_btn').attr('disabled', false).html('Place Order');
             }
         });
         return handler;
 
     }
-
     function stripe_setup(key) {
         // A reference to Stripe.js initialized with a fake API key.
         // Sign in to see examples pre-filled with your key.
@@ -136,7 +99,7 @@ $(document).ready(function() {
         });
         card.mount("#stripe-card-element");
 
-        card.on("change", function(event) {
+        card.on("change", function (event) {
             // Disable the Pay button if there are no card details in the Element
             document.querySelector("button").disabled = event.empty;
             document.querySelector("#card-error").textContent = event.error ? event.error.message : "";
@@ -146,22 +109,21 @@ $(document).ready(function() {
             'card': card
         };
     }
-
     function stripe_payment(stripe, card, clientSecret) {
         // Calls stripe.confirmCardPayment
         // If the card requires authentication Stripe shows a pop-up modal to
         // prompt the user to enter authentication details without leaving your page.
         stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: card
-                }
-            })
-            .then(function(result) {
+            payment_method: {
+                card: card
+            }
+        })
+            .then(function (result) {
                 if (result.error) {
                     // Show error to your customer
                     var errorMsg = document.querySelector("#card-error");
                     errorMsg.textContent = result.error.message;
-                    setTimeout(function() {
+                    setTimeout(function () {
                         errorMsg.textContent = "";
                     }, 4000);
                     Toast.fire({
@@ -171,9 +133,9 @@ $(document).ready(function() {
                     $('#place_order_btn').attr('disabled', false).html('Place Order');
                 } else {
                     // The payment succeeded!
-                    place_order().done(function(result) {
+                    place_order().done(function (result) {
                         if (result.error == false) {
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 location.href = base_url + 'payment/success';
                             }, 1000);
                         }
@@ -181,7 +143,6 @@ $(document).ready(function() {
                 }
             });
     };
-
     function flutterwave_payment() {
         var address_id = $("#address_id").val();
         if ($('#wallet_balance').is(":checked")) {
@@ -216,13 +177,7 @@ $(document).ready(function() {
                 var country = 'NG';
                 break;
         }
-        $.post(base_url + "cart/pre-payment-setup", {
-            [csrfName]: csrfHash,
-            'payment_method': 'Flutterwave',
-            'wallet_used': wallet_used,
-            'address_id': address_id,
-            'promo_code': promo_code
-        }, function(data) {
+        $.post(base_url + "cart/pre-payment-setup", { [csrfName]: csrfHash, 'payment_method': 'Flutterwave', 'wallet_used': wallet_used, 'address_id': address_id, 'promo_code': promo_code }, function (data) {
             csrfName = data.csrfName;
             csrfHash = data.csrfHash;
             if (data.error == false) {
@@ -247,13 +202,13 @@ $(document).ready(function() {
                         phone_number: phone_number,
                         name: name,
                     },
-                    callback: function(data) { // specified callback function
+                    callback: function (data) { // specified callback function
                         if (data.status == "successful") {
                             $("#flutterwave_transaction_id").val(data.transaction_id);
                             $("#flutterwave_transaction_ref").val(data.tx_ref);
-                            place_order().done(function(result) {
+                            place_order().done(function (result) {
                                 if (result.error == false) {
-                                    setTimeout(function() {
+                                    setTimeout(function () {
                                         location.href = base_url + 'payment/success';
                                     }, 3000);
                                 }
@@ -276,7 +231,7 @@ $(document).ready(function() {
             }
         }, "json");
     }
-    $("#checkout_form").on('submit', function(event) {
+    $("#checkout_form").on('submit', function (event) {
         event.preventDefault();
         var address_id = $("#address_id").val();
         if ($('#wallet_balance').is(":checked")) {
@@ -313,13 +268,7 @@ $(document).ready(function() {
         }
         var payment_methods = $("input[name='payment_method']:checked").val();
         if (payment_methods == "Stripe") {
-            $.post(base_url + "cart/pre-payment-setup", {
-                [csrfName]: csrfHash,
-                'payment_method': 'Stripe',
-                'wallet_used': wallet_used,
-                'address_id': address_id,
-                'promo_code': promo_code
-            }, function(data) {
+            $.post(base_url + "cart/pre-payment-setup", { [csrfName]: csrfHash, 'payment_method': 'Stripe', 'wallet_used': wallet_used, 'address_id': address_id, 'promo_code': promo_code }, function (data) {
                 $('#stripe_client_secret').val(data.client_secret);
                 $('#stripe_payment_id').val(data.id);
                 var stripe_client_secret = data.client_secret;
@@ -331,13 +280,7 @@ $(document).ready(function() {
         } else if (payment_methods == "Paystack") {
             var key = $('#paystack_key_id').val();
             var user_email = $('#user_email').val();
-            $.post(base_url + "cart/pre-payment-setup", {
-                [csrfName]: csrfHash,
-                'payment_method': 'Paystack',
-                'wallet_used': wallet_used,
-                'address_id': address_id,
-                'promo_code': promo_code
-            }, function(data) {
+            $.post(base_url + "cart/pre-payment-setup", { [csrfName]: csrfHash, 'payment_method': 'Paystack', 'wallet_used': wallet_used, 'address_id': address_id, 'promo_code': promo_code }, function (data) {
                 csrfName = data.csrfName;
                 csrfHash = data.csrfHash;
                 if (data.error == false) {
@@ -353,13 +296,7 @@ $(document).ready(function() {
             }, "json");
 
         } else if (payment_methods == "Razorpay") {
-            $.post(base_url + "cart/pre-payment-setup", {
-                [csrfName]: csrfHash,
-                'payment_method': 'Razorpay',
-                'wallet_used': wallet_used,
-                'address_id': address_id,
-                'promo_code': promo_code
-            }, function(data) {
+            $.post(base_url + "cart/pre-payment-setup", { [csrfName]: csrfHash, 'payment_method': 'Razorpay', 'wallet_used': wallet_used, 'address_id': address_id, 'promo_code': promo_code }, function (data) {
                 csrfName = data.csrfName;
                 csrfHash = data.csrfHash;
                 if (data.error == false) {
@@ -373,7 +310,7 @@ $(document).ready(function() {
                     var user_contact = $('#user_contact').val();
                     var rzp1 = razorpay_setup(key, final_total, app_name, logo, razorpay_order_id, username, user_email, user_contact);
                     rzp1.open();
-                    rzp1.on('payment.failed', function(response) {
+                    rzp1.on('payment.failed', function (response) {
                         location.href = base_url + 'payment/cancel';
                     });
                 } else {
@@ -384,36 +321,8 @@ $(document).ready(function() {
                 }
             }, "json");
 
-        } else if (payment_methods == "Midtrans") {
-            $.post(base_url + "cart/pre-payment-setup", {
-                [csrfName]: csrfHash,
-                'payment_method': 'Midtrans',
-                'wallet_used': wallet_used,
-                'address_id': address_id,
-                'promo_code': promo_code
-            }, function(data) {
-                csrfName = data.csrfName;
-                csrfHash = data.csrfHash;
-                if (data.error == false) {
-                    $('#midtrans_transaction_token').val(data.token);
-                    $('#midtrans_order_id').val(data.order_id);
-                    var key = $('#razorpay_key_id').val();
-                    var app_name = $('#app_name').val();
-                    var logo = $('#logo').val();
-                    var midtrans_transaction_token = data.token;
-                    var username = $('#username').val();
-                    var user_email = $('#user_email').val();
-                    var user_contact = $('#user_contact').val();
-                    var midtrans_payment = midtrans_setup(midtrans_transaction_token);
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: data.message
-                    });
-                }
-            }, "json");
         } else if (payment_methods == "Paypal") {
-            place_order().done(function(result) {
+            place_order().done(function (result) {
                 $('#paypal_order_id').val(result.data.order_id);
                 $('#csrf_token').val(csrfHash);
                 $('#paypal_form').submit();
@@ -434,15 +343,8 @@ $(document).ready(function() {
             if (promo_set == 1) {
                 promo_code = $('#promocode_input').val();
             }
-            $.post(base_url + "payment/initiate-paytm-transaction", {
-                [csrfName]: csrfHash,
-                amount: amount,
-                user_id: user_id,
-                address_id: address_id,
-                wallet_used: wallet_used,
-                promo_code: promo_code
-            }, function(data) {
-                if (typeof(data.data.body.txnToken) != "undefined" && data.data.body.txnToken !== null) {
+            $.post(base_url + "payment/initiate-paytm-transaction", { [csrfName]: csrfHash, amount: amount, user_id: user_id, address_id: address_id, wallet_used: wallet_used, promo_code: promo_code }, function (data) {
+                if (typeof (data.data.body.txnToken) != "undefined" && data.data.body.txnToken !== null) {
                     $('#paytm_transaction_token').val(data.data.body.txnToken)
                     $('#paytm_order_id').val(data.data.order_id)
                     var txn_token = $('#paytm_transaction_token').val();
@@ -463,7 +365,7 @@ $(document).ready(function() {
         } else if (payment_methods == "Flutterwave") {
             flutterwave_payment();
         } else if (payment_methods == "COD" || payment_methods == "Direct Bank Transfer") {
-            place_order().done(function(result) {
+            place_order().done(function (result) {
                 if (result.error == false) {
                     window.location.reload();
                 } else {
@@ -474,7 +376,7 @@ $(document).ready(function() {
                 }
             });
         } else if (wallet_used == 1 && final_total == '0' || final_total == '0.00') {
-            place_order().done(function(result) {
+            place_order().done(function (result) {
                 if (result.error == false) {
                     window.location.reload();
                 } else {
@@ -507,10 +409,10 @@ $(document).ready(function() {
             cache: false,
             processData: false,
             contentType: false,
-            beforeSend: function() {
+            beforeSend: function () {
                 $('#place_order_btn').attr('disabled', true).html('Please Wait...');
             },
-            success: function(data) {
+            success: function (data) {
                 csrfName = data.csrfName;
                 csrfHash = data.csrfHash;
                 $('#place_order_btn').attr('disabled', false).html('Place Order');
@@ -529,18 +431,19 @@ $(document).ready(function() {
         })
     }
 
-    $("input[name='payment_method']").on('change', function(e) {
+    $("input[name='payment_method']").on('change', function (e) {
         e.preventDefault();
         var payment_method = $("input[name=payment_method]:checked").val();
         if (payment_method == "Stripe") {
             stripe1 = stripe_setup($('#stripe_key_id').val());
             $('#stripe_div').slideDown();
-        } else {
+        }
+        else {
             $('#stripe_div').slideUp();
         }
     });
 
-    $("#redeem_btn").on('click', function(event) {
+    $("#redeem_btn").on('click', function (event) {
         event.preventDefault();
         var formdata = new FormData();
         formdata.append(csrfName, csrfHash);
@@ -561,7 +464,7 @@ $(document).ready(function() {
             cache: false,
             processData: false,
             contentType: false,
-            success: function(data) {
+            success: function (data) {
                 csrfName = data.csrfName;
                 csrfHash = data.csrfHash;
                 if (data.error == false) {
@@ -598,7 +501,7 @@ $(document).ready(function() {
             }
         })
     });
-    $("#clear_promo_btn").on('click', function(event) {
+    $("#clear_promo_btn").on('click', function (event) {
         event.preventDefault();
         $('#promocode_div').addClass('d-none');
         var wallet_used = $('.wallet_used').text();
@@ -637,7 +540,7 @@ $(document).ready(function() {
     $(".address-modal").iziModal({
         overlayClose: false,
         overlayColor: 'rgba(0, 0, 0, 0.6)',
-        onOpening: function(modal) {
+        onOpening: function (modal) {
             modal.startLoading();
             $.ajax({
                 type: 'POST',
@@ -646,14 +549,14 @@ $(document).ready(function() {
                 },
                 url: base_url + 'my-account/get-address/',
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     csrfName = data.csrfName;
                     csrfHash = data.csrfHash;
                     var html = '';
                     if (data.error == false) {
                         var address_id = $('#address_id').val();
                         var found = 0;
-                        $.each(data.data, function(i, e) {
+                        $.each(data.data, function (i, e) {
                             var checked = '';
                             if (e.id == address_id) {
                                 found = 1;
@@ -685,7 +588,7 @@ $(document).ready(function() {
     $(".promo_code_modal").iziModal({
         overlayClose: false,
         overlayColor: 'rgba(0, 0, 0, 0.6)',
-        onOpening: function(modal) {
+        onOpening: function (modal) {
             modal.startLoading();
             $.ajax({
                 type: 'POST',
@@ -694,13 +597,13 @@ $(document).ready(function() {
                 },
                 url: base_url + 'my-account/get_promo_codes/',
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     console.log(data.promo_codes);
                     csrfName = data.csrfName;
                     csrfHash = data.csrfHash;
                     var html = '';
                     if ((data.promo_codes).length != 0) {
-                        $.each(data.promo_codes, function(i, e) {
+                        $.each(data.promo_codes, function (i, e) {
                             html += '<label for="promo-code-' + e.id + '"><li class="list-group-item d-flex justify-content-between lh-condensed mt-3">' +
                                 '<img src="' + e.image + '" style="max-width:80px;max-height:80px;"/>' +
                                 '<div class="col-11 row pl-2">' +
@@ -719,7 +622,7 @@ $(document).ready(function() {
         }
     });
 
-    $(".address-modal").on('click', '.submit', function(event) {
+    $(".address-modal").on('click', '.submit', function (event) {
         event.preventDefault();
         var index = $('input[class="select-address"]:checked').data('index');
         var address = addresses[index];
@@ -743,13 +646,11 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST',
             data: {
-                [csrfName]: csrfHash,
-                'address_id': address_id,
-                'total': total,
+                [csrfName]: csrfHash, 'address_id': address_id, 'total': total,
             },
             url: base_url + 'cart/get-delivery-charge',
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 csrfName = result.csrfName;
                 csrfHash = result.csrfHash;
                 $('.delivery-charge').html(result.delivery_charge);
@@ -784,12 +685,11 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST',
             data: {
-                [csrfName]: csrfHash,
-                'address_id': address_id,
+                [csrfName]: csrfHash, 'address_id': address_id,
             },
             url: base_url + 'cart/check-product-availability',
             dataType: 'json',
-            success: function(result) {
+            success: function (result) {
                 csrfName = result.csrfName;
                 csrfHash = result.csrfHash;
 
@@ -810,15 +710,15 @@ $('#datepicker').attr({
     'placeholder': 'Preferred Delivery Date',
     'autocomplete': 'off'
 });
-$('#datepicker').on('cancel.daterangepicker', function(ev, picker) {
+$('#datepicker').on('cancel.daterangepicker', function (ev, picker) {
     $(this).val('');
     $('#start_date').val('');
 });
-$('#datepicker').on('apply.daterangepicker', function(ev, picker) {
+$('#datepicker').on('apply.daterangepicker', function (ev, picker) {
     var drp = $('#datepicker').data('daterangepicker');
     var current_time = moment().format("HH:mm");
     if (moment(drp.startDate).isSame(moment(), 'd')) {
-        $('.time-slot-inputs').each(function(i, e) {
+        $('.time-slot-inputs').each(function (i, e) {
             if ($(this).data('last_order_time') < current_time) {
                 $(this).prop('checked', false).attr('required', false);
                 $(this).parent().hide();
@@ -828,7 +728,7 @@ $('#datepicker').on('apply.daterangepicker', function(ev, picker) {
             }
         });
     } else {
-        $('.time-slot-inputs').each(function(i, e) {
+        $('.time-slot-inputs').each(function (i, e) {
             $(this).attr('required', true);
             $(this).parent().show();
         });
@@ -837,8 +737,7 @@ $('#datepicker').on('apply.daterangepicker', function(ev, picker) {
     $('#delivery_date').val(drp.startDate.format('YYYY-MM-DD'));
     $(this).val(picker.startDate.format('MM/DD/YYYY'));
 });
-var mindate = '',
-    maxdate = '';
+var mindate = '', maxdate = '';
 if ($('#delivery_starts_from').val() != "") {
     mindate = moment().add(($('#delivery_starts_from').val() - 1), 'days');
 } else {
@@ -864,20 +763,18 @@ $('#datepicker').daterangepicker({
         'label': 'Preferred Delivery Date'
     }
 });
-$(document).ready(function() {
+$(document).ready(function () {
     var address_id = $('#address_id').val();
     var sub_total = $('#sub_total').val();
     var total = $('#temp_total').val();
     $.ajax({
         type: 'POST',
         data: {
-            [csrfName]: csrfHash,
-            'address_id': address_id,
-            'total': total,
+            [csrfName]: csrfHash, 'address_id': address_id, 'total': total,
         },
         url: base_url + 'cart/get-delivery-charge',
         dataType: 'json',
-        success: function(result) {
+        success: function (result) {
             csrfName = result.csrfName;
             csrfHash = result.csrfHash;
             $('.delivery-charge').html(result.delivery_charge);
@@ -891,7 +788,7 @@ $(document).ready(function() {
 
     })
 });
-$(document).on('click', '#wallet_balance', function() {
+$(document).on('click', '#wallet_balance', function () {
     var current_wallet_balance = $('#current_wallet_balance').val();
     var wallet_balance = current_wallet_balance.replace(",", "");
     var final_total = $('#final_total').text();
@@ -927,7 +824,6 @@ $(document).on('click', '#wallet_balance', function() {
             $('#cod').prop('required', false);
             $('#paypal').prop('required', false);
             $('#razorpay').prop('required', false);
-            $('#midtrans').prop('required', false);
             $('#paystack').prop('required', false);
             $('#payumoney').prop('required', false);
             $('#flutterwave').prop('required', false);
@@ -979,7 +875,6 @@ $(document).on('click', '#wallet_balance', function() {
 
     }
 });
-
 function paytm_setup(txnToken, orderId, amount, app_name, logo, username, user_email, user_contact) {
     var config = {
         "root": "",
@@ -1004,7 +899,7 @@ function paytm_setup(txnToken, orderId, amount, app_name, logo, username, user_e
             }
         },
         "handler": {
-            "notifyMerchant": function(eventName, data) {
+            "notifyMerchant": function (eventName, data) {
                 if (eventName == 'SESSION_EXPIRED') {
                     alert("Your session has expired!!");
                     location.reload();
@@ -1014,7 +909,7 @@ function paytm_setup(txnToken, orderId, amount, app_name, logo, username, user_e
                 }
 
             },
-            transactionStatus: function(data) {
+            transactionStatus: function (data) {
                 window.Paytm.CheckoutJS.close();
                 if (data.STATUS == 'TXN_SUCCESS' || data.STATUS == 'PENDING') {
                     let myForm = document.getElementById('checkout_form');
@@ -1033,10 +928,10 @@ function paytm_setup(txnToken, orderId, amount, app_name, logo, username, user_e
                         cache: false,
                         processData: false,
                         contentType: false,
-                        beforeSend: function() {
+                        beforeSend: function () {
                             $('#place_order_btn').attr('disabled', true).html('Please Wait...');
                         },
-                        success: function(data) {
+                        success: function (data) {
                             csrfName = data.csrfName;
                             csrfHash = data.csrfHash;
                             $('#place_order_btn').attr('disabled', false).html('Place Order');
@@ -1045,7 +940,7 @@ function paytm_setup(txnToken, orderId, amount, app_name, logo, username, user_e
                                     icon: 'success',
                                     title: data.message
                                 });
-                                setTimeout(function() {
+                                setTimeout(function () {
                                     location.href = base_url + 'payment/success';
                                 }, 3000);
                             } else {
@@ -1081,13 +976,14 @@ function paytm_setup(txnToken, orderId, amount, app_name, logo, username, user_e
     }
 }
 
-$("input[name='payment_method']").on('change', function(e) {
+$("input[name='payment_method']").on('change', function (e) {
     e.preventDefault();
     var payment_method = $(this).val();
     if (payment_method == "Direct Bank Transfer") {
         $('#account_data').show();
         $('#bank_transfer_slide').slideDown();
-    } else {
+    }
+    else {
         $('#account_data').hide();
         $('#bank_transfer_slide').slideUp();
     }

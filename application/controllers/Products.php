@@ -935,7 +935,6 @@ class Products extends CI_Controller
             if ($is_pincode) {
                 $zipcode_id = fetch_details('zipcodes', ['zipcode' => $zipcode], 'id');
                 $is_available = is_product_delivarable($type = 'zipcode', $zipcode_id[0]['id'], $product_id);
-                
                 if ($is_available) {
                     $_SESSION['valid_zipcode'] = $zipcode;
                     $this->response['error'] = false;

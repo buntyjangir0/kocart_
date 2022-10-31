@@ -5,7 +5,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h4>Order Tracking </h4>
+          <h4>Order Tracking</h4>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -34,10 +34,11 @@
                   <tr>
                     <th data-field="id" data-sortable="true">ID</th>
                     <th data-field="order_id" data-sortable="true">Order ID</th>
-                    <th data-field="order_item_id" data-sortable="false">Order Item ID</th>
-                    <th data-field="courier_agency" data-sortable="false">courier_agency</th>
-                    <th data-field="tracking_id" data-sortable="false">tracking_id</th>
+                    <th data-field="order_item_id" data-sortable="false">Order Number</th>
+                    <th data-field="courier_agency" data-sortable="false">Courier Agency</th>
+                    <th data-field="tracking_id" data-sortable="false">Tracking Number</th>
                     <th data-field="url" data-sortable="false" >URL</th>
+                   <th data-field="invoice_url" data-sortable="false" >Invoice Url</th>
                     <th data-field="date" data-sortable="false">Date</th>
                     <th data-field="operate" data-sortable="true">Actions</th>
                   </tr>

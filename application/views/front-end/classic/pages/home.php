@@ -84,8 +84,6 @@
                             <hr>
                         </div>
                         <div <?= ($is_rtl == true) ? "dir='rtl'" : ""; ?> class="swiper-wrapper">
-                       
-                        <?php if(isset($row['product_details']) && !empty($row['product_details'])){?>
                             <?php foreach ($row['product_details'] as $product_row) { ?>
                                 <div class="swiper-slide">
                                     <div class="product-grid">
@@ -162,8 +160,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            <?php } }?>
-                            
+                            <?php } ?>
                         </div>
                         <div class="swiper-pagination"></div>
                     </div>
@@ -195,7 +192,6 @@
                         </div>
                         <?php $product_count = count($row['product_details']) - 1; ?>
                         <?php $last_product = $row['product_details'][$product_count]; ?>
-                        <?php if(isset($row['product_details']) && !empty($row['product_details'])){?>
                         <?php foreach ($row['product_details'] as $key => $product_row) { ?>
                             <?php if ($key != $product_count) { ?>
                                 <div class="col-md-4">
@@ -273,7 +269,7 @@
                                     </div>
                                 </div>
                             <?php } ?>
-                        <?php }} ?>
+                        <?php } ?>
                     </div>
                     <!-- Last Product -->
                     <div class="col-md-4 col-12 style-3-product-right-lg">
@@ -397,7 +393,6 @@
                                             $modal = "#quick-view";
                                         }
                                         ?>
-                                        
                                         <?php $variant_price = ($product_row['variants'][0]['special_price'] > 0 && $product_row['variants'][0]['special_price'] != '') ? $product_row['variants'][0]['special_price'] : $product_row['variants'][0]['price'];
                                         $data_min = (isset($product_row['minimum_order_quantity']) && !empty($product_row['minimum_order_quantity'])) ? $product_row['minimum_order_quantity'] : 1;
                                         $data_step = (isset($product_row['minimum_order_quantity']) && !empty($product_row['quantity_step_size'])) ? $product_row['quantity_step_size'] : 1;

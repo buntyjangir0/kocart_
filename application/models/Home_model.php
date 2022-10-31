@@ -18,7 +18,7 @@ class Home_model extends CI_Model
             $this->db->where('oi.delivery_boy_id', $user_id);
         }
         $res = $this->db->get('`orders` o')->result_array();
-        
+        // print_r($this->db->last_query());
         return $res[0]['counter'];
     }
 

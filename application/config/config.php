@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +24,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] = 'http://localhost/infinitie/eshop-vendor/';
+$config['base_url'] = 'https://kocart.com/';
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +53,7 @@ $config['index_page'] = '';
 |
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
-$config['uri_protocol']    = 'REQUEST_URI';
+$config['uri_protocol']	= 'REQUEST_URI';
 
 /*
 |--------------------------------------------------------------------------
@@ -77,7 +77,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']    = 'english';
+$config['language']	= 'english';
 
 /*
 |--------------------------------------------------------------------------
@@ -159,7 +159,7 @@ $config['composer_autoload'] = FALSE;
 | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
 |
 */
-
+// $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
 $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-@\=';
 
 /*
@@ -225,7 +225,7 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 1;
+$config['log_threshold'] = 0;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,7 +326,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = 'Bunty2000';
 
 /*
 |--------------------------------------------------------------------------
@@ -402,11 +402,11 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']    = '';
-$config['cookie_domain']    = '';
-$config['cookie_path']        = '/';
-$config['cookie_secure']    = FALSE;
-$config['cookie_httponly']     = FALSE;
+$config['cookie_prefix']	= '';
+$config['cookie_domain']	= 'kocart.com';
+$config['cookie_path']		= '/';
+$config['cookie_secure']	= FALSE;
+$config['cookie_httponly'] 	= FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -450,13 +450,12 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-
 $config['csrf_protection'] = TRUE;
-$config['csrf_token_name'] = 'ekart_security_token';
-$config['csrf_cookie_name'] = 'ekart_security_cookie';
-$config['csrf_expire'] = 7200;
-$config['csrf_regenerate'] = TRUE;
-$config['csrf_exclude_uris'] = array('admin/product/process_bulk_upload', 'admin/product/get_subcategory', 'cart/pre-payment-setup', 'cart/validate-promo-code', 'my-account/get-address', 'cart/place-order', 'payment/[a-z_-]+', 'admin/category/add_category', 'admin/orders/update_orders', 'admin/product/update_product_order', 'admin/orders/delete_orders', 'admin/product/delete_product', 'app/v1/api/[a-z_-]+', 'delivery_boy/app/v1/api/[a-z_-]+', 'admin/app/v1/api/[a-z_-]+', 'admin/home/fetch_sales', 'seller/app/v1/api/[a-z_-]+');
+$config['csrf_token_name'] =  'param2000';//'ekart_security_token';
+$config['csrf_cookie_name'] = 'param2000123'; //'ekart_security_cookie';
+$config['csrf_expire'] = 7200000000;
+$config['csrf_regenerate'] = FALSE;
+$config['csrf_exclude_uris'] = array('admin/product/get_subcategory', 'admin/category/add_category', 'admin/orders/update_orders', 'admin/product/update_product_order', 'admin/orders/delete_orders', 'admin/product/delete_product', 'app/v1/api/[a-z_-]+', 'delivery_boy/app/v1/api/[a-z_-]+', 'delivery-boy/app/v1/api/[a-z_-]+','admin/home/fetch_sales', 'seller/app/v1/api/[a-z_-]+', 'admin/app/v1/api/[a-z_-]+', 'cart/checkout', 'cart/place_order', 'payment/paypal');
 
 /*
 |--------------------------------------------------------------------------
@@ -584,9 +583,9 @@ $config['system_modules'] = [
 */
 
 $config['type'] = array(
-    'image' => ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'eps'],
-    'video' => ['mp4', '3gp', 'avchd', 'avi', 'flv', 'mkv', 'mov', 'webm', 'wmv', 'mpg', 'mpeg', 'ogg'],
-    'document' => ['doc', 'docx', 'txt', 'pdf', 'ppt', 'pptx'],
-    'spreadsheet' => ['xls', 'xsls'],
-    'archive' => ['zip', '7z', 'bz2', 'gz', 'gzip', 'rar', 'tar'],
+    'image' => ['jpg', 'jpeg', 'png','gif','bmp','eps'],
+    'video' => ['mp4','3gp','avchd','avi','flv','mkv','mov','webm','wmv','mpg','mpeg','ogg'],
+    'document' => ['doc','docx','txt','pdf','ppt','pptx'],
+    'spreadsheet' => ['xls','xsls'],
+    'archive' => ['zip','7z','bz2','gz','gzip','rar','tar'],
 );

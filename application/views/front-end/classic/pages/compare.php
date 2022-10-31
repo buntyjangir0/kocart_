@@ -14,7 +14,7 @@
         <div id="compare-items">
             <div class="container">
                 <div class="row">
-                    <div class="col-8 d-flex justify-content-center h5">No items in compare</div>
+                    <div class="col-8 d-flex justify-content-center h5">No items to compare</div>
                 </div>
             </div>
         </div>

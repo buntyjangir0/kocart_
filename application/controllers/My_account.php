@@ -267,6 +267,7 @@ class My_account extends CI_Controller
             $this->data['keywords'] = 'Address, ' . $this->data['web_settings']['meta_keywords'];
             $this->data['description'] = 'Address | ' . $this->data['web_settings']['meta_description'];
             $this->data['cities'] = get_cities();
+            $this->data['countries'] = get_countries();
             $this->data['areas'] = fetch_details('areas', NULL);
             $this->load->view('front-end/' . THEME . '/template', $this->data);
         } else {

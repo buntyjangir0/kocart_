@@ -238,6 +238,7 @@ class Promo_code_model extends CI_Model
                 $final_total = $row['final_total'];
 
                 $res = validate_promo_code($promo_code, $user_id, $final_total);
+
                 $response = update_wallet_balance('credit', $user_id, $res['data'][0]['final_discount'], 'Discounted Amount Credited for Order Item ID  : ' . $row['id']);
 
                 if ($response['error'] == false && $response['error'] == '') {

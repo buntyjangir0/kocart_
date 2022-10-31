@@ -68,10 +68,8 @@ class Home extends CI_Controller
                 unset($sections[$i]['product_details'][0]['total']);
                 $sections[$i]['product_details'] = $products['product'];
                 unset($product_details);
-               
             }
         }
-       
         $this->data['sections'] = $sections;
         $this->data['categories'] = $categories;
         $this->data['username'] = $this->session->userdata('username');
@@ -454,5 +452,9 @@ class Home extends CI_Controller
             echo json_encode($this->response);
             return false;
         }
+    }
+
+	public function test() {
+    echo $this->security->get_csrf_hash();
     }
 }

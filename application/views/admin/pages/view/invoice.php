@@ -124,9 +124,8 @@
                                                             $tax_amount = ($row['tax_amount']) ? $row['tax_amount'] : '0';
                                                             $quantity += floatval($row['quantity']);
                                                             $total_tax += floatval($row['tax_amount']);
-                                                            // $price_with_tax = $row['price'] - $tax_amount;
-                                                            $price_with_tax = $row['price'];
-                                                            $sub_total = floatval($row['price']) * $row['quantity'];
+                                                            $price_with_tax = $row['price'] + $tax_amount;
+                                                            $sub_total = floatval($row['price']) * $row['quantity'] + $tax_amount;
                                                             $final_sub_total += $sub_total;
                                                     ?>
                                                             <tr>
@@ -186,7 +185,7 @@
                                                 <th>Total Order Price (
                                                     <?= $settings['currency'] ?>)</th>
                                                 <td>+
-                                                    <?= number_format($final_sub_total, 2) ?>
+                                                    <?= number_format($total, 2) ?>
                                                 </td>
                                             </tr>
                                             <tr>

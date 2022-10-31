@@ -262,12 +262,6 @@
                                             </td>
                                         </tr>
                                     <?php } ?>
-
-
-
-
-
-
                                     <?php if (isset($payment_methods['direct_bank_transfer']) && $payment_methods['direct_bank_transfer'] == 1) { ?>
                                         <tr>
                                             <td>
@@ -283,26 +277,6 @@
                                             <td>
                                                 <label for="bank_transfer">
                                                     <?= !empty($this->lang->line('direct_bank_transfers')) ? $this->lang->line('direct_bank_transfers') : 'Direct Bank Transfers' ?>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                    <!-- Midtrans -->
-                                    <?php if (isset($payment_methods['midtrans_payment_method']) && $payment_methods['midtrans_payment_method'] == 1) { ?>
-                                        <tr>
-                                            <td>
-                                                <label for="midtrans">
-                                                    <input id="midtrans" name="payment_method" type="radio" value="Midtrans" required>
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <label for="midtrans">
-                                                    <img src="<?= THEME_ASSETS_URL . 'images/midtrans.jpg' ?>" class="payment-gateway-images" alt="Midtrans">
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <label for="midtrans">
-                                                    Midtrans
                                                 </label>
                                             </td>
                                         </tr>
@@ -324,7 +298,7 @@
                             <?php if (isset($payment_methods['direct_bank_transfer']) && $payment_methods['direct_bank_transfer'] == 1) { ?>
                                 <div class="row">
                                     <div class="alert alert-warning">
-                                        <strong><?= !empty($this->lang->line('edit_address')) ? $this->lang->line('edit_address') : 'Instructions! Make your payment directly into our account. Your order will not further proceed until the funds have cleared in our account. <br> You have to send your payment receipt from order details page then admin will verify that.' ?> </strong>
+                                        <strong><?= !empty($this->lang->line('edit_address')) ? $this->lang->line('edit_address') : 'Instructions! Make your payment directly into our account. Your order will not further proceed until the funds have cleared in our account. <br> You have to send your payment receipt from order details page then admin will verify that.' ?> </strong> 
                                     </div>
                                     <div class="alert alert-info col-md-12">
                                         <strong><?= !empty($this->lang->line('account_details')) ? $this->lang->line('account_details') : 'Account Details!' ?> </strong> <br><br>
@@ -354,11 +328,6 @@
                     <input type="hidden" name="razorpay_order_id" id="razorpay_order_id" value="" />
                     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id" value="" />
                     <input type="hidden" name="razorpay_signature" id="razorpay_signature" value="" />
-
-                    <input type="hidden" name="midtrans_order_id" id="midtrans_order_id" value="" />
-                    <input type="hidden" name="midtrans_transaction_token" id="midtrans_transaction_token" value="" />
-
-
                     <input type="hidden" id="paytm_transaction_token" name="paytm_transaction_token" value="" />
                     <input type="hidden" id="paytm_order_id" name="paytm_order_id" value="" />
 
@@ -440,7 +409,6 @@
                                                 <td class="text-muted"><?= $settings['currency'] . ' <span class="sub_total">' . number_format($cart['sub_total'], 2) . '</span>' ?></td>
                                             </tr>
 
-
                                             <?php if (!empty($cart['tax_percentage'])) { ?>
                                                 <tr class="cart-product-tax d-none">
                                                     <td class="text-muted"><?= !empty($this->lang->line('tax')) ? $this->lang->line('tax') : 'Tax' ?> (<?= $cart['tax_percentage'] ?>%)</td>
@@ -449,7 +417,7 @@
                                             <?php } ?>
                                             <tr>
                                                 <td class="text-muted"><?= !empty($this->lang->line('delivery_charge')) ? $this->lang->line('delivery_charge') : 'Delivery Charge' ?></td>
-                                                <td class="text-muted"><?= $settings['currency'] . ' ' ?><span class="delivery-charge"><?= $cart['delivery_charge'] ?></span></td>
+                                                <td class="text-muted"><?= $settings['currency'] . ' ' ?><span class="delivery-charge"></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="text-muted"><?= !empty($this->lang->line('wallet')) ? $this->lang->line('wallet') : 'Wallet' ?></td>
@@ -499,7 +467,7 @@
 </section>
 
 <form action="<?= base_url('payment/paypal') ?>" id="paypal_form" method="POST">
-    <input type="hidden" id="csrf_token" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+    <input type="hidden" id="csrf_token" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
     <input type="hidden" name="order_id" id="paypal_order_id" value="" />
 </form>
 <input type="hidden" name="stripe_key_id" id="stripe_key_id" value="<?= $payment_methods['stripe_publishable_key'] ?>" />
@@ -538,15 +506,4 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
-
-<?php
-$midtrans_url = $midtrans_client_key = "";
-if (isset($payment_methods['midtrans_payment_mode'])) {
-    $midtrans_url = (isset($payment_methods['midtrans_payment_mode']) && $payment_methods['midtrans_payment_mode'] == "sandbox") ? "https://app.sandbox.midtrans.com/snap/snap.js" : "https://app.midtrans.com/snap/snap.js";
-    $midtrans_client_key = $payment_methods['midtrans_client_key'];
-}
-?>
-<script type="text/javascript" src="<?= $midtrans_url ?>" data-client-key="<?= $midtrans_client_key ?>"></script>
-
-
 <script src="<?= THEME_ASSETS_URL . '/js/checkout.js' ?>"></script>

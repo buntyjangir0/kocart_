@@ -98,11 +98,8 @@
                                                         $tax_amount = ($row['tax_amount']) ? $row['tax_amount'] : '0';
                                                         $quantity += floatval($row['quantity']);
                                                         $total_tax += floatval($row['tax_amount']);
-                                                        //$price_with_tax = $row['price'] + $tax_amount;
-                                                        $price_with_tax = $row['price'];
-                                                        // $sub_total = floatval($row['price']) * $row['quantity'] + $tax_amount;
-                                                        $sub_total = floatval($row['price']) * floatval($row['quantity']);
-                                                        $final_sub_total += $sub_total;
+                                                        $price_with_tax = $row['price'] + $tax_amount;
+                                                        $sub_total = floatval($row['price']) * $row['quantity'] + $tax_amount;
                                                 ?>
                                                         <tr>
                                                             <td><?= $j ?><br></td>
@@ -129,7 +126,7 @@
                                                     <th> <?= $quantity ?>
                                                         <br>
                                                     </th>
-                                                    <th> <?= $settings['currency'] . ' ' . $final_sub_total ?><br></th>
+                                                    <th> <?= $settings['currency'] . ' ' . $sub_total ?><br></th>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -157,7 +154,7 @@
                                         <tr>
                                             <th>Total Order Price</th>
                                             <td>+
-                                                <?= $settings['currency'] . ' ' . number_format($final_sub_total, 2) ?>
+                                                <?= $settings['currency'] . ' ' . number_format($total, 2) ?>
                                             </td>
                                         </tr>
                                         <tr>
@@ -220,8 +217,7 @@
                                         <tr>
                                             <th>Final Total</th>
                                             <td>
-                                                <?php $final_total = $order_detls[0]['final_total'] - $order_detls[0]['wallet_balance']  - $order_detls[0]['discount']; ?>
-                                                <?= $settings['currency'] . '  ' . number_format($final_total, 2) ?>
+                                                <?= $settings['currency'] . '  ' . number_format($order_detls[0]['total_payable'], 2) ?>
                                             </td>
                                         </tr>
                                     </tbody>

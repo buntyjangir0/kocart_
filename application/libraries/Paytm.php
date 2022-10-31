@@ -108,7 +108,8 @@ class Paytm
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
         $response = curl_exec($ch);
-       
+        print_r($response);
+        return false;
         return json_decode($response, true);
     }
     static public function transaction_status($order_id)

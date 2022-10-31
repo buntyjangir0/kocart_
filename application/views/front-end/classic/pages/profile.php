@@ -35,19 +35,19 @@
                             <input type="text" class="form-control" id="username" placeholder="Type Username here" name="username" value="<?= $users->username ?>">
                         </div>
 
-                        <div class="form-group col-md-6">
-                            <label for="mobile" class="col-sm-12 col-form-label"><?= !empty($this->lang->line('mobile')) ? $this->lang->line('mobile') : 'Mobile' ?>*</label>
-                            <div>
-                                <input type="phone" class="form-control" id="mobile" placeholder="Type Mobile No. here" name="mobile" value="<?= $users->mobile ?>">
+                        <?php if ($identity_column == 'email') { ?>
+                            <div class="form-group col-md-6">
+                                <label for="email" class="col-sm-12 col-form-label"><?= !empty($this->lang->line('email')) ? $this->lang->line('email') : 'Email' ?>*</label>
+                                <input type="text" class="form-control" id="email" placeholder="Type Email here" name="email" value="<?= $users->email ?>">
                             </div>
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="email" class="col-sm-12 col-form-label"><?= !empty($this->lang->line('email')) ? $this->lang->line('email') : 'Email' ?>*</label>
-                            <input type="text" class="form-control" id="email" placeholder="Type Email here" name="email" value="<?= $users->email ?>">
-                        </div>
-
-
+                        <?php } else { ?>
+                            <div class="form-group col-md-6">
+                                <label for="mobile" class="col-sm-12 col-form-label"><?= !empty($this->lang->line('mobile')) ? $this->lang->line('mobile') : 'Mobile' ?>*</label>
+                                <div>
+                                    <input type="phone" class="form-control" id="mobile" placeholder="Type Mobile No. here" name="mobile" value="<?= $users->mobile ?>">
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div class="form-group">
                         <label for="old" class="col-sm-12 col-form-label"><small><?= !empty($this->lang->line('old_password')) ? $this->lang->line('old_password') : 'Old Password' ?></small></label>

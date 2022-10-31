@@ -258,6 +258,8 @@
                                         <thead>
                                             <tr>
                                                 <th data-field="id" data-sortable='true' data-footer-formatter="totalFormatter">Order ID</th>
+                                              <th data-field="order_number" data-sortable='true'>Order Number</th>
+                                                <th data-field="bl_number" data-sortable='true'>Tracking Number</th>
                                                 <th data-field="user_id" data-sortable='true' data-visible="false">User ID</th>
                                                 <th data-field="qty" data-sortable='true' data-visible="false">Qty</th>
                                                 <th data-field="name" data-sortable='true'>User Name</th>
@@ -270,7 +272,7 @@
                                                 <th data-field="wallet_balance" data-sortable='true' data-visible="true">Wallet Used(<?= $curreny ?>)</th>
                                                 <th data-field="promo_code" data-sortable='true' data-visible="false">Promo Code</th>
                                                 <th data-field="promo_discount" data-sortable='true' data-visible="true">Promo disc.(<?= $curreny ?>)</th>
-                                                <th data-field="discount" data-sortable='true' data-visible="true">Discount <?= $curreny ?>(%)</th>
+                                                <!-- <th data-field="discount" data-sortable='true' data-visible="true">Discount <?= $curreny ?>(%)</th> -->
                                                 <th data-field="final_total" data-sortable='true'>Final Total(<?= $curreny ?>)</th>
                                                 <th data-field="payment_method" data-sortable='true' data-visible="true">Payment Method</th>
                                                 <th data-field="address" data-sortable='true' data-visible='false'>Address</th>

@@ -71,53 +71,20 @@ class Cart_model extends CI_Model
             $res = array_map(function ($d) {
                 $d['special_price'] = $d['special_price'] != '' && $d['special_price'] != null && $d['special_price'] > 0 && $d['special_price'] < $d['price'] ? $d['special_price'] : $d['price'];
                 $percentage = (isset($d['tax_percentage']) && intval($d['tax_percentage']) > 0 && $d['tax_percentage'] != null) ? $d['tax_percentage'] : '0';
-                // if ((isset($d['is_prices_inclusive_tax']) && $d['is_prices_inclusive_tax'] == 0) || (!isset($d['is_prices_inclusive_tax'])) && $percentage > 0) {
-                //     $price_tax_amount = $d['price'] * ($percentage / 100);
-                //     $special_price_tax_amount = $d['special_price'] * ($percentage / 100);
-                // } else {
-                //     $price_tax_amount = 0;
-                //     $special_price_tax_amount = 0;
-                // }
-
-                $price_tax_amount = $d['price'] * ($percentage / 100);
-                $special_price_tax_amount = $d['special_price'] * ($percentage / 100);
-
-                
+                if ((isset($d['is_prices_inclusive_tax']) && $d['is_prices_inclusive_tax'] == 0) || (!isset($d['is_prices_inclusive_tax'])) && $percentage > 0) {
+                    $price_tax_amount = $d['price'] * ($percentage / 100);
+                    $special_price_tax_amount = $d['special_price'] * ($percentage / 100);
+                } else {
+                    $price_tax_amount = 0;
+                    $special_price_tax_amount = 0;
+                }
                 $tax_amount = $d['special_price'] * ($d['tax_percentage'] / 100);
-              
-                
-                // $d['price'] =  $d['price'] + $price_tax_amount;
-                // $d['special_price'] =  $d['special_price'] + $special_price_tax_amount;
-                if ((isset($d['is_prices_inclusive_tax']) && $d['is_prices_inclusive_tax'] == 0) || (!isset($d['is_prices_inclusive_tax'])) && $percentage > 0) {
-                    $d['price'] =  ($d['price'] +  $price_tax_amount) ;
-                }
-                else{
-                    $d['price'] =  $d['price'];
-                }
-                if ((isset($d['is_prices_inclusive_tax']) && $d['is_prices_inclusive_tax'] == 0) || (!isset($d['is_prices_inclusive_tax'])) && $percentage > 0) {
-                    $d['special_price'] =  ($d['special_price'] + $special_price_tax_amount);
-                }
-                else{
-                    $d['special_price'] =  $d['special_price'];
-                }
+                $d['price'] =  $d['price'] + $price_tax_amount;
+                $d['special_price'] =  $d['special_price'] + $special_price_tax_amount;
                 $d['minimum_order_quantity'] =  (isset($d['minimum_order_quantity']) && !empty($d['minimum_order_quantity'])) ? $d['minimum_order_quantity'] : 1;
-                if (isset($d['special_price']) && $d['special_price'] != '' && $d['special_price'] != null && $d['special_price'] > 0 && $d['special_price'] < $d['price'] ? $d['special_price'] : $d['price']) {
-                    $d['net_amount'] =  ($d['special_price'] - $special_price_tax_amount);
-    
-                }
-                else{
-                    $d['net_amount'] =  ($d['price'] - $price_tax_amount);
-                }
-                
+                $d['net_amount'] = $d['special_price'] - $tax_amount;
                 $d['tax_percentage'] =  (isset($d['tax_percentage']) && !empty($d['tax_percentage'])) ? $d['tax_percentage'] : '';
                 $d['tax_amount'] =  (isset($tax_amount) && !empty($tax_amount)) ? $tax_amount : 0;
-                if (isset($d['special_price']) && $d['special_price'] != '' && $d['special_price'] != null && $d['special_price'] > 0 && $d['special_price'] < $d['price'] ? $d['special_price'] : $d['price']) {
-                    $d['sub_total'] =  ($d['special_price'] * $d['qty']);
-    
-                }
-                else{
-                    $d['sub_total'] =  ($d['price'] * $d['qty']);
-                }
                 $d['quantity_step_size'] =  (isset($d['quantity_step_size']) && !empty($d['quantity_step_size'])) ? $d['quantity_step_size'] : 1;
                 $d['total_allowed_quantity'] =  isset($d['total_allowed_quantity']) && !empty($d['total_allowed_quantity']) ? $d['total_allowed_quantity'] : '';
                 $d['product_variants'] = get_variants_values_by_id($d['product_variant_id']);
